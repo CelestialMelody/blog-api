@@ -1,2 +1,2 @@
 # gin-gorm-practice
-Fork form gin-gorm-example created by user eddycjy
+Forked form gin-gorm-example created by user eddycjy
