@@ -71,6 +71,12 @@ func AddTags(c *gin.Context) {
 		"msg":  e.GetMsg(code),
 		"data": make(map[string]string),
 	})
+
+	//logrus.Println(gin.H{
+	//	"code": code,
+	//	"msg":  e.GetMsg(code),
+	//	"data": make(map[string]string),
+	//})
 }
 
 // EditTags - 编辑多个文章标签 PUT update

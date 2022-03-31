@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"gin-gorm-practice/conf/setting"
+	"gin-gorm-practice/models/blogArticle"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -14,7 +15,7 @@ type DBList struct {
 	MysqlDB *gorm.DB
 }
 
-type model struct {
+type Module struct {
 	ID         int64 `json:"id" gorm:"primary_key;column:id;type:bigint(20) unsigned;not null;default:0;comment:'主键'" binding:"required"`
 	CreatedOn  int64 `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required"`
 	ModifiedOn int64 `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required"`
@@ -25,7 +26,7 @@ type BeforeBD interface {
 	BeforeUpdate(db *gorm.DB) error
 }
 
-func initDB() *DBList {
+func InitDB() *DBList {
 	//dbList := &DBList{}
 	dbList := new(DBList)
 	db, err := CreateDB(struct {
@@ -46,6 +47,25 @@ func initDB() *DBList {
 		logrus.Panic("connect DB error: ", err.Error())
 	}
 	dbList.MysqlDB = db
+
+	// auto migrate
+	if err = dbList.MysqlDB.AutoMigrate(
+		&blogArticle.BlogArticles{},
+	); err != nil {
+		logrus.Panic("auto migrate error: ", err.Error())
+	}
+
+	logrus.Infof("connect DB success")
+
+	database, err := dbList.MysqlDB.DB()
+	if err != nil {
+		logrus.Println("get DB error: ", err.Error())
+	}
+	// 实际上我不太了解
+	database.SetMaxIdleConns(10)     // 设置最大空闲连接数
+	database.SetMaxOpenConns(100)    // 设置最大连接数
+	database.SetConnMaxLifetime(100) // 设置连接最大存活时间
+
 	return dbList
 }
 
@@ -90,5 +110,7 @@ func CreateDB(dbInfo struct {
 		PrepareStmt: true,           // 预处理语句
 		Logger:      logger.Default, // 日志级别
 	})
+
+	DB.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
 	return DB, err
 }
