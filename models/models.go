@@ -74,6 +74,7 @@ func init() {
 		//logrus.Println(err)
 		//return
 	}
+	logrus.Infof("Connected DB successfully, dbname: %s", dbName)
 	// Gorm 2.0 用法
 	mysqlDB, err := DB.DB()
 	if err != nil {

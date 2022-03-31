@@ -48,8 +48,7 @@ func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
 }
 
 func GetTagTotal(maps interface{}) (count int64) {
-	cnt := int64(count)
-	models.DB.Model(&Tag{}).Where(maps).Count(&cnt)
+	models.DB.Model(&Tag{}).Where(maps).Count(&count)
 	return
 }
 
