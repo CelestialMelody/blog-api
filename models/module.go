@@ -14,6 +14,17 @@ type DBList struct {
 	MysqlDB *gorm.DB
 }
 
+type model struct {
+	ID         int64 `json:"id" gorm:"primary_key;column:id;type:bigint(20) unsigned;not null;default:0;comment:'主键'" binding:"required"`
+	CreatedOn  int64 `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required"`
+	ModifiedOn int64 `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required"`
+}
+
+type BeforeBD interface {
+	BeforeCreate(db *gorm.DB) error
+	BeforeUpdate(db *gorm.DB) error
+}
+
 func initDB() *DBList {
 	//dbList := &DBList{}
 	dbList := new(DBList)

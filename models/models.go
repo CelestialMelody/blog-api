@@ -17,6 +17,12 @@ type Model struct {
 	ID         uint   `gorm:"primary_key" json:"id"`
 	CreatedON  string `json:"created_on"` // 数据库时间改为varchar了
 	ModifiedON string `json:"modified_on"`
+	//DeletedAt  string `json:"deleted_on" gorm:"column:deleted_on"` // 并没有实现
+}
+
+type BeforeDB interface {
+	BeforeCreate(db *gorm.DB) error
+	BeforeUpdate(db *gorm.DB) error
 }
 
 func init() {

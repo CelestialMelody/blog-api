@@ -106,7 +106,7 @@ func EditTags(c *gin.Context) {
 			if state != -1 {
 				data["state"] = state
 			}
-			blogTag.EditTag(id, data)
+			blogTag.EditTag(id, data) //
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
 		}
