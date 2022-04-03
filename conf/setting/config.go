@@ -13,15 +13,15 @@ type Config struct {
 // GlobalConfig 获取配置 默认全局配置
 var GlobalConfig *Config
 
-func Init() {
+func Init() { // v0.2.2没有使用 所以报错
 	GlobalConfig = &Config{
-		Viper: viper.New(), // 支持这种？
-		//viper.New(),
+		Viper: viper.New(),
 	}
-	GlobalConfig.SetConfigName("config")   // 读取yaml文件
-	GlobalConfig.AddConfigPath(".")        // 添加搜索路径
-	GlobalConfig.AddConfigPath("./config") // 搜索路径 yaml在当前目录
-	GlobalConfig.SetConfigType("yaml")     // 读取yaml文件
+	// v0.2.2 之前 文件名 搜索地址写错了
+	GlobalConfig.SetConfigName("app")    // 读取yaml文件
+	GlobalConfig.SetConfigType("yaml")   // 读取yaml文件
+	GlobalConfig.AddConfigPath(".")      // 添加搜索路径
+	GlobalConfig.AddConfigPath("./conf") // 搜索路径 yaml在当前目录
 	err := GlobalConfig.ReadInConfig()
 	if err != nil {
 		// logrus.WithField  底层为logger.WithField 分配了一个新条目，并在其中添加了一个字段

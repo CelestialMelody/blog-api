@@ -3,8 +3,9 @@ httpEngine:
   host: localhost
 
 db:
-  Address: localhost:3306
-  User: blogAdmin
-  Password: 20011717
-  Database: blog
-  TablePrefix: blog_
+  mysql:
+    Address: localhost:3306
+    User: blogAdmin
+    Password: 20011717
+    Database: blog
+    TablePrefix: blog_

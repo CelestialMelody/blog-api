@@ -7,12 +7,18 @@ import (
 	"time"
 )
 
+var instanceDB *gorm.DB
+
 type Tag struct {
 	models.Model
 	Name       string `json:"name"`
 	CreatedBy  string `json:"created_by"`
 	ModifiedBy string `json:"modified_by"`
 	State      int    `json:"state"`
+}
+
+func init() {
+	instanceDB = models.InitDatabase()
 }
 
 // BeforeCreate 新建前; gorm v1 *gorm.Scope.SetColumn("CreatedOn", time.Now()); v2 *gorm.DB.SetColumn("CreatedOn", time.Now())
@@ -43,18 +49,18 @@ func (t *Tag) BeforeUpdate(db *gorm.DB) error {
 }
 
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	models.DB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
+	instanceDB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
 	return
 }
 
 func GetTagTotal(maps interface{}) (count int64) {
-	models.DB.Model(&Tag{}).Where(maps).Count(&count)
+	instanceDB.Model(&Tag{}).Where(maps).Count(&count)
 	return
 }
 
 func ExistTagByName(name string) bool {
 	var tag Tag
-	models.DB.Select("id").Where("name = ?", name).First(&tag)
+	instanceDB.Select("id").Where("name = ?", name).First(&tag)
 	if tag.ID > 0 {
 		return true
 	}
@@ -63,7 +69,7 @@ func ExistTagByName(name string) bool {
 
 func ExistTagByID(id int) bool {
 	var tag Tag
-	models.DB.Select("id").Where("id = ?", id).First(&tag)
+	instanceDB.Select("id").Where("id = ?", id).First(&tag)
 	if tag.ID > 0 {
 		return true
 	}
@@ -76,17 +82,17 @@ func AddTag(name string, state int, createdBy string) bool {
 		State:     state,
 		CreatedBy: createdBy,
 	}
-	models.DB.Model(&Tag{}).Create(&tag)
+	instanceDB.Model(&Tag{}).Create(&tag)
 	return true
 }
 
 func EditTag(id int, data interface{}) bool {
-	models.DB.Model(&Tag{}).Where("id = ?", id).Updates(data)
+	instanceDB.Model(&Tag{}).Where("id = ?", id).Updates(data)
 	return true
 }
 
 func DeleteTag(id int) bool {
-	models.DB.Where("id = ?", id).Delete(&Tag{})
+	instanceDB.Where("id = ?", id).Delete(&Tag{})
 	return true
 }
 

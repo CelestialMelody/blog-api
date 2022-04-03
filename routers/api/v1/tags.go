@@ -81,10 +81,12 @@ func AddTags(c *gin.Context) {
 
 // EditTags - 编辑多个文章标签 PUT update
 func EditTags(c *gin.Context) {
+	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
 	name := c.Query("name")
 	modifiedBy := c.Query("modified_by")
 
+	// 验证参数
 	valid := validation.Validation{}
 	state := -1
 
@@ -93,6 +95,7 @@ func EditTags(c *gin.Context) {
 		valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
 	}
 
+	// 验证参数
 	valid.Required(id, "id").Message("ID不能为空")
 	//valid.Required(name, "name").Message("名称不能为空")
 	valid.Required(modifiedBy, "modified_by").Message("修改人不能为空")
@@ -118,6 +121,7 @@ func EditTags(c *gin.Context) {
 		}
 	}
 
+	// 返回结果
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"msg":  e.GetMsg(code),

@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"gin-gorm-practice/conf/setting"
-	"gin-gorm-practice/models/blogArticle"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -16,9 +15,9 @@ type DBList struct {
 }
 
 type Module struct {
-	ID         int64 `json:"id" gorm:"primary_key;column:id;type:bigint(20) unsigned;not null;default:0;comment:'主键'" binding:"required"`
-	CreatedOn  int64 `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required"`
-	ModifiedOn int64 `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required"`
+	ID         uint   `json:"id" gorm:"primary_key;column:id;type:int(10) unsigned;not null;default:0;comment:'主键'" binding:"required"`
+	CreatedOn  string `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required"` // v0.2.2 前写错了类型
+	ModifiedOn string `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required"`
 }
 
 type BeforeBD interface {
@@ -27,7 +26,8 @@ type BeforeBD interface {
 }
 
 func InitDB() *DBList {
-	//dbList := &DBList{}
+	//dbList := &DBList{} // v2.2 忘记config Init
+	setting.Init()
 	dbList := new(DBList)
 	db, err := CreateDB(struct {
 		Addr           string
@@ -36,10 +36,11 @@ func InitDB() *DBList {
 		DB             string
 		ConnectTimeout uint
 	}{
-		Addr:           setting.GlobalConfig.GetString("db.mysql.Addr"),
+		// 查看配置文件 ;v2.2 配置写错了
+		Addr:           setting.GlobalConfig.GetString("db.mysql.Address"),
 		User:           setting.GlobalConfig.GetString("db.mysql.User"),
-		Pass:           setting.GlobalConfig.GetString("db.mysql.Pass"),
-		DB:             setting.GlobalConfig.GetString("db.mysql.DB"),
+		Pass:           setting.GlobalConfig.GetString("db.mysql.Password"),
+		DB:             setting.GlobalConfig.GetString("db.mysql.Database"),
 		ConnectTimeout: 10,
 	})
 	if err != nil {
@@ -48,14 +49,9 @@ func InitDB() *DBList {
 	}
 	dbList.MysqlDB = db
 
-	// auto migrate
-	if err = dbList.MysqlDB.AutoMigrate(
-		&blogArticle.BlogArticles{},
-	); err != nil {
-		logrus.Panic("auto migrate error: ", err.Error())
-	}
+	// auto migrate ; 不应该放这里 这里的module 我在article中有用到 循环依赖
 
-	logrus.Infof("connect DB success")
+	logrus.Infof("Connected DB success")
 
 	database, err := dbList.MysqlDB.DB()
 	if err != nil {
@@ -110,7 +106,5 @@ func CreateDB(dbInfo struct {
 		PrepareStmt: true,           // 预处理语句
 		Logger:      logger.Default, // 日志级别
 	})
-
-	DB.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
 	return DB, err
 }
