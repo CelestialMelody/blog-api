@@ -3,6 +3,7 @@ package v1
 import (
 	"gin-gorm-practice/conf/setting"
 	"gin-gorm-practice/models/blogArticle"
+	"gin-gorm-practice/models/blogTag"
 	"gin-gorm-practice/pkg/e"
 	"gin-gorm-practice/pkg/util"
 	"github.com/beego/beego/v2/core/validation"
@@ -18,11 +19,12 @@ import (
 // @Description get articles
 // @Success 200 {object} models.Article
 // @router / [get]
+
 func GetArticle(c *gin.Context) {
 	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
 
-	logger := zap.NewExample()
+	logger := zap.NewExample() // logger 和 valid 可以放在init函数中
 
 	// 验证参数
 	valid := validation.Validation{}
@@ -46,9 +48,10 @@ func GetArticle(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
+		"code":        code,
+		"msg":         e.GetMsg(code),
+		"data":        data,
+		"article_msg": "get an article",
 	})
 }
 
@@ -95,10 +98,13 @@ func GetArticles(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
+		"code":        code,
+		"msg":         e.GetMsg(code),
+		"data":        data,
+		"article_msg": "get articles",
 	})
+	// 没看到返回结果 只能手动加了
+	logger.Info("GetArticles", zap.Any("data", data))
 }
 
 // AddArticle
@@ -107,9 +113,63 @@ func GetArticles(c *gin.Context) {
 // @Success 200 {object} models.Article
 // @router / [post]
 func AddArticle(c *gin.Context) {
+	// 获取参数
+	type needValid struct {
+		tagId     int    `validate:"min=1"`
+		title     string `validate:"min=1,max=100"`
+		desc      string `validate:"min=1,max=255"`
+		content   string `validate:"min=1,max=65535"`
+		createdBy string `validate:"min=1,max=100"`
+		state     int    `validate:"oneof=0 1"`
+	}
+
+	need := needValid{
+		tagId:     -1,
+		title:     "",
+		desc:      "",
+		content:   "",
+		createdBy: "",
+		state:     -1,
+	}
+
+	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
+	need.title = c.Query("title")
+	need.desc = c.Query("desc")
+	need.content = c.Query("content")
+	need.createdBy = c.Query("created_by")
+	need.state = com.StrTo(c.Query("state")).MustInt()
+
+	// 验证参数
+	valid := validator.New() // 使用 playground validator 包生成的验证器
+	logger := zap.NewExample()
+
+	code := e.INVALID_PARAMS
+	if err := valid.Struct(need); err == nil {
+		if blogTag.ExistTagByID(need.tagId) {
+			data := make(map[string]interface{})
+			data["tag_id"] = need.tagId
+			data["title"] = need.title
+			data["desc"] = need.desc
+			data["content"] = need.content
+			data["created_by"] = need.createdBy
+			data["state"] = need.state
+			if err1 := blogArticle.AddArticle(data); err1 == nil {
+				code = e.SUCCESS
+			} else {
+				logger.Info("err1: " + err1.Error())
+			}
+		} else {
+			code = e.ERROR_NOT_EXIST_TAG
+		}
+	} else {
+		logger.Info("err: " + err.Error())
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "add an article",
+		"code":        code,
+		"msg":         e.GetMsg(code),
+		"data":        make(map[string]interface{}),
+		"article_msg": "add an article",
 	})
 }
 
@@ -119,9 +179,67 @@ func AddArticle(c *gin.Context) {
 // @Success 200 {object} models.Article
 // @router / [put]
 func EditArticle(c *gin.Context) {
+	// 获取参数
+	type needValid struct {
+		id         int    `validate:"min=1"`
+		tagID      int    `validate:"min=1"`
+		title      string `validate:"min=1,max=100"`
+		desc       string `validate:"min=1,max=255"`
+		content    string `validate:"min=1,max=65535"`
+		modifiedBy string `validate:"min=1,max=100"`
+		state      int    `validate:"oneof=0 1"`
+	}
+
+	need := needValid{
+		id:         -1,
+		tagID:      -1,
+		title:      "",
+		desc:       "",
+		content:    "",
+		modifiedBy: "",
+		state:      -1,
+	}
+
+	need.id = com.StrTo(c.Param("id")).MustInt()
+	need.tagID = com.StrTo(c.Query("tag_id")).MustInt()
+	need.title = c.Query("title")
+	need.desc = c.Query("content")
+	need.modifiedBy = c.Query("modified_by")
+	need.state = com.StrTo(c.Query("state")).MustInt()
+
+	logger := zap.NewExample()
+	valid := validator.New()
+	code := e.INVALID_PARAMS
+
+	if err := valid.Struct(need); err == nil {
+		if err1 := blogArticle.ExistArticleByID(need.id); err1 == nil {
+			if blogTag.ExistTagByID(need.tagID) {
+				data := make(map[string]interface{})
+				data["tag_id"] = need.tagID
+				data["title"] = need.title
+				data["desc"] = need.desc
+				data["content"] = need.content
+				data["modified_by"] = need.modifiedBy
+				data["state"] = need.state
+
+				blogArticle.EditArticle(need.id, data)
+				code = e.SUCCESS
+			} else {
+				code = e.ERROR_NOT_EXIST_TAG
+			}
+		} else {
+			code = e.ERROR_NOT_EXIST_ARTICLE
+			logger.Info("err1: " + err1.Error())
+		}
+	} else {
+		logger.Info("err: " + err.Error())
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "edit an article",
+		"code":        code,
+		"msg":         e.GetMsg(code),
+		"data":        make(map[string]interface{}),
+		"article_msg": "edit an article",
 	})
 }
 
@@ -131,8 +249,29 @@ func EditArticle(c *gin.Context) {
 // @Success 200 {object} models.Article
 // @router / [delete]
 func DeleteArticle(c *gin.Context) {
+	id := com.StrTo(c.Param("id")).MustInt()
+
+	logger := zap.NewExample()
+	valid := validator.New()
+
+	code := e.INVALID_PARAMS
+
+	if err1 := valid.Var(id, "min=1"); err1 == nil {
+		if err2 := blogArticle.ExistArticleByID(id); err2 == nil {
+			blogArticle.DeleteArticle(id)
+			code = e.SUCCESS
+		} else {
+			code = e.ERROR_NOT_EXIST_ARTICLE
+			logger.Info("err2" + err2.Error())
+		}
+	} else {
+		logger.Info("err1" + err1.Error())
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "delete an article",
+		"code":        code,
+		"msg":         e.GetMsg(code),
+		"data":        make(map[string]interface{}),
+		"article_msg": "delete an article",
 	})
 }

@@ -11,7 +11,10 @@ import (
 
 var instanceDB *models.DBList
 
-type BlogArticle struct {
+// 接口可以返回bool 方便处理 返回err 感觉处理时太丑了 err1 err2...; 有必要的接口返回err; 看看别的项目 学习一下
+
+// Article v0.2.4之前为 BlogArticle 但在配置时写了前缀 故改为 Article
+type Article struct {
 	models.Module
 	TagID      uint        `json:"tag_id" gorm:"index" validate:"min=1"`
 	Tag        blogTag.Tag `json:"tag"`
@@ -29,7 +32,7 @@ func init() {
 }
 
 // BeforeCreate 建议抽象为接口
-func (article *BlogArticle) BeforeCreate(db *gorm.DB) error {
+func (article *Article) BeforeCreate(db *gorm.DB) error {
 	year := time.Now().Year()
 	month := time.Now().Month()
 	day := time.Now().Day()
@@ -40,7 +43,7 @@ func (article *BlogArticle) BeforeCreate(db *gorm.DB) error {
 	return nil
 }
 
-func (article *BlogArticle) BeforeUpdate(db *gorm.DB) error { // 大写
+func (article *Article) BeforeUpdate(db *gorm.DB) error { // 大写
 	year := time.Now().Year()
 	month := time.Now().Month()
 	day := time.Now().Day()
@@ -51,9 +54,9 @@ func (article *BlogArticle) BeforeUpdate(db *gorm.DB) error { // 大写
 	return nil
 }
 
-// ExistArticleByID 根据ID查询文章是否存在
+// ExistArticleByID 根据ID查询文章是否存在; id 与 tag_id?
 func ExistArticleByID(id int) error {
-	var article BlogArticle
+	var article Article
 	err := instanceDB.MysqlDB.Select("id").Where("id = ?", id).First(&article).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return err
@@ -64,33 +67,47 @@ func ExistArticleByID(id int) error {
 	return nil
 }
 
+//// ExistArticleByTagID 根据TagID查询文章是否存在; tag_id 这个在tag.go中有
+//func ExistArticleByTagID(tagID int) error {
+//	var article Article
+//	// select id from blog_article where tag_id = ?
+//	err := instanceDB.MysqlDB.Select("id").Where("tag_id = ?", tagID).First(&article).Error
+//	if err != nil && err != gorm.ErrRecordNotFound {
+//		return err
+//	}
+//	if article.ID > 0 {
+//		return nil
+//	}
+//	return nil
+//}
+
 // GetArticleTotalCount 查询文章总数
 func GetArticleTotalCount(maps interface{}) (count int64) {
-	instanceDB.MysqlDB.Model(&BlogArticle{}).Where(maps).Count(&count)
+	instanceDB.MysqlDB.Model(&Article{}).Where(maps).Count(&count)
 	return
 }
 
 // GetArticles 获取文章列表
-func GetArticles(pageNum int, pageSize int, maps interface{}) (articles []BlogArticle) {
-	// DB.Preload 查询关联表
+func GetArticles(pageNum int, pageSize int, maps interface{}) (articles []Article) {
+	// DB.Preload 查询关联表; blog_blog_article; 问题: 为什么大写Tag?
 	instanceDB.MysqlDB.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles)
 	return
 }
 
 // GetArticle 获取文章
-func GetArticle(id int) (article BlogArticle) {
+func GetArticle(id int) (article Article) {
 	instanceDB.MysqlDB.Where("id = ?", id).First(&article)
 	// DB.Association 关联查询
 	err := instanceDB.MysqlDB.Model(&article).Association("tag").Find(&article.Tag)
 	if err != nil {
 		logrus.Debugln("Can't Find Article", err)
-		return BlogArticle{}
+		return Article{}
 	}
 	return
 }
 
 func AddArticle(data map[string]interface{}) error {
-	instanceDB.MysqlDB.Create(&BlogArticle{
+	instanceDB.MysqlDB.Create(&Article{
 		//map[string]interface{}.(type) 接口类型断言
 		TagID:     data["tag_id"].(uint),
 		Title:     data["title"].(string),
@@ -103,14 +120,14 @@ func AddArticle(data map[string]interface{}) error {
 }
 
 // EditArticle 编辑文章; 只会返回true 不太好
-func EditArticle(id int64, data interface{}) bool {
-	instanceDB.MysqlDB.Model(&BlogArticle{}).Where("id = ?", id).Updates(data)
+func EditArticle(id int, data interface{}) bool {
+	instanceDB.MysqlDB.Model(&Article{}).Where("id = ?", id).Updates(data)
 	return true
 }
 
 // DeleteArticle 删除文章 只会返回true 不太好
-func DeleteArticle(id int64) bool {
-	instanceDB.MysqlDB.Where("id = ?", id).Delete(&BlogArticle{})
+func DeleteArticle(id int) bool {
+	instanceDB.MysqlDB.Where("id = ?", id).Delete(&Article{})
 	return true
 }
 
@@ -119,15 +136,15 @@ func DeleteArticle(id int64) bool {
 //logger := zap.NewExample().Sugar()
 // 创建表 Cannot add foreign key constraint; 放弃使用auto migrate
 // 解决 循环依赖
-//if err := instanceDB.MysqlDB.AutoMigrate(&BlogArticle{}); err != nil {
-//	logger.Error("BlogArticle AutoMigrate error", zap.Error(err))
+//if err := instanceDB.MysqlDB.AutoMigrate(&Article{}); err != nil {
+//	logger.Error("Article AutoMigrate error", zap.Error(err))
 //}
 //instanceDB.MysqlDB.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4")
-//logger.Infof("BlogArticle AutoMigrate success")
+//logger.Infof("Article AutoMigrate success")
 //}
 
-// BlogArticle 通过AutoMigrate()创建表 db.set() 如果要用到外键 貌似不好创建; 放弃
-//type BlogArticle struct { // gorm 字段设置; comment 注释 add comment for field when migration
+// Article 通过AutoMigrate()创建表 db.set() 如果要用到外键 貌似不好创建; 放弃
+//type Article struct { // gorm 字段设置; comment 注释 add comment for field when migration
 //	models.Module
 //
 //	// Cannot add foreign key constraint;
