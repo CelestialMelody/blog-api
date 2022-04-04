@@ -13,15 +13,15 @@ var instanceDB *models.DBList
 
 type BlogArticle struct {
 	models.Module
-	TagID      uint        `json:"tag_id" gorm:"index"`
+	TagID      uint        `json:"tag_id" gorm:"index" validate:"min=1"`
 	Tag        blogTag.Tag `json:"tag"`
-	Title      string      `json:"title"`
-	Desc       string      `json:"desc"`
-	Content    string      `json:"content"`
-	CreatedBy  string      `json:"created_by"`
-	ModifiedBy string      `json:"modified_by"`
-	DeletedOn  string      `json:"deleted_on"`
-	State      int         `json:"state"`
+	Title      string      `json:"title" validate:"min=1,max=100"`
+	Desc       string      `json:"desc" validate:"min=1,max=100"`
+	Content    string      `json:"content" validate:"min=1"`
+	CreatedBy  string      `json:"created_by" validate:"min=1,max=100"`
+	ModifiedBy string      `json:"modified_by" validate:"min=1,max=100"`
+	DeletedOn  string      `json:"deleted_on" validate:"min=1,max=100"`
+	State      int         `json:"state" validate:"oneof=0 1"`
 }
 
 func init() {
