@@ -9,3 +9,7 @@ db:
     Password: 20011717
     Database: blog
     TablePrefix: blog_
+
+app:
+  page_size: 10
+  jwt_secret: "123456"

@@ -1,6 +1,8 @@
 package routers
 
 import (
+	"gin-gorm-practice/middleware/jwt"
+	"gin-gorm-practice/routers/api"
 	v1 "gin-gorm-practice/routers/api/v1"
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +18,12 @@ func InitRouter() *gin.Engine {
 	router.Use(gin.Recovery()) // 异常处理
 	gin.SetMode(gin.DebugMode) //设置gin的模式，debug模式
 
+	// JWT 验证
+	router.GET("/auth", api.GetAuth)
+
 	apiV1 := router.Group("/api/v1")
+	// 接入中间件
+	apiV1.Use(jwt.JWT())
 	{
 		apiV1.GET("/tags", v1.GetTags)           // 获取标签列表
 		apiV1.POST("/tags", v1.AddTags)          // 新建标签
