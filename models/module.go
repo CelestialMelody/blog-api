@@ -15,7 +15,7 @@ type DBList struct {
 }
 
 type Module struct {
-	ID         uint   `json:"id" gorm:"primary_key;column:id;type:int(10) unsigned;not null;default:0;comment:'主键'" binding:"required"`
+	ID         int    `json:"id" gorm:"primary_key;column:id;type:int(10) unsigned;not null;default:0;comment:'主键'" binding:"required"`
 	CreatedOn  string `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required"` // v0.2.2 前写错了类型
 	ModifiedOn string `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required"`
 }

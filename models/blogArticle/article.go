@@ -12,11 +12,12 @@ import (
 var instanceDB *models.DBList
 
 // 接口可以返回bool 方便处理 返回err 感觉处理时太丑了 err1 err2...; 有必要的接口返回err; 看看别的项目 学习一下
+// 是我傻了 返回的err是局部变量 不冲突
 
 // Article v0.2.4之前为 BlogArticle 但在配置时写了前缀 故改为 Article
 type Article struct {
 	models.Module
-	TagID      uint        `json:"tag_id" gorm:"index" validate:"min=1"`
+	TagID      int         `json:"tag_id" gorm:"index" validate:"min=1"`
 	Tag        blogTag.Tag `json:"tag"`
 	Title      string      `json:"title" validate:"min=1,max=100"`
 	Desc       string      `json:"desc" validate:"min=1,max=100"`
@@ -67,20 +68,6 @@ func ExistArticleByID(id int) error {
 	return nil
 }
 
-//// ExistArticleByTagID 根据TagID查询文章是否存在; tag_id 这个在tag.go中有
-//func ExistArticleByTagID(tagID int) error {
-//	var article Article
-//	// select id from blog_article where tag_id = ?
-//	err := instanceDB.MysqlDB.Select("id").Where("tag_id = ?", tagID).First(&article).Error
-//	if err != nil && err != gorm.ErrRecordNotFound {
-//		return err
-//	}
-//	if article.ID > 0 {
-//		return nil
-//	}
-//	return nil
-//}
-
 // GetArticleTotalCount 查询文章总数
 func GetArticleTotalCount(maps interface{}) (count int64) {
 	instanceDB.MysqlDB.Model(&Article{}).Where(maps).Count(&count)
@@ -109,7 +96,7 @@ func GetArticle(id int) (article Article) {
 func AddArticle(data map[string]interface{}) error {
 	instanceDB.MysqlDB.Create(&Article{
 		//map[string]interface{}.(type) 接口类型断言
-		TagID:     data["tag_id"].(uint),
+		TagID:     data["tag_id"].(int),
 		Title:     data["title"].(string),
 		Desc:      data["desc"].(string),
 		Content:   data["content"].(string),
@@ -175,3 +162,17 @@ func DeleteArticle(id int) bool {
 //`state` tinyint(3) unsigned DEFAULT '1' COMMENT '状态 0为禁用1为启用',
 //PRIMARY KEY (`id`)
 //) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文章管理';
+
+//// ExistArticleByTagID 根据TagID查询文章是否存在; tag_id 这个在tag.go中有
+//func ExistArticleByTagID(tagID int) error {
+//	var article Article
+//	// select id from blog_article where tag_id = ?
+//	err := instanceDB.MysqlDB.Select("id").Where("tag_id = ?", tagID).First(&article).Error
+//	if err != nil && err != gorm.ErrRecordNotFound {
+//		return err
+//	}
+//	if article.ID > 0 {
+//		return nil
+//	}
+//	return nil
+//}

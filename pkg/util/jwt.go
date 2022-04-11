@@ -25,6 +25,7 @@ func init() {
 		return
 	}
 	jwtSecret = []byte(sec.Key("jwt_secret").String())
+	logger.Info("jetSecret", zap.String("jetSecret", string(jwtSecret)))
 }
 
 // GenerateToken 生成token
@@ -66,6 +67,9 @@ func ParseToken(token string) (*Claims, error) {
 		func(token *jwt.Token) (interface{}, error) {
 			return jwtSecret, nil
 		})
+
+	// debug
+	logger.Debug("token", zap.String("token", token), zap.Any("err", err))
 
 	if tokenClaims != nil {
 		// 获取自定义的claims

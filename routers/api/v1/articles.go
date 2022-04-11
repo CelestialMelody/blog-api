@@ -19,7 +19,6 @@ import (
 // @Description get articles
 // @Success 200 {object} models.Article
 // @router / [get]
-
 func GetArticle(c *gin.Context) {
 	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
@@ -124,7 +123,7 @@ func AddArticle(c *gin.Context) {
 	}
 
 	need := needValid{
-		tagId:     -1,
+		tagId:     0, //
 		title:     "",
 		desc:      "",
 		content:   "",
@@ -132,7 +131,7 @@ func AddArticle(c *gin.Context) {
 		state:     -1,
 	}
 
-	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
+	need.tagId = com.StrTo(c.Query("tag_id")).MustInt() // 现在不考虑uint了// v0.3.1 uint -> 否则导致接口断言失败->AddArticle: TagID: data[ "tag_id"].(uint)
 	need.title = c.Query("title")
 	need.desc = c.Query("desc")
 	need.content = c.Query("content")
@@ -153,10 +152,10 @@ func AddArticle(c *gin.Context) {
 			data["content"] = need.content
 			data["created_by"] = need.createdBy
 			data["state"] = need.state
-			if err1 := blogArticle.AddArticle(data); err1 == nil {
+			if err := blogArticle.AddArticle(data); err == nil {
 				code = e.SUCCESS
 			} else {
-				logger.Info("err1: " + err1.Error())
+				logger.Info("err: " + err.Error())
 			}
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
@@ -212,7 +211,7 @@ func EditArticle(c *gin.Context) {
 	code := e.INVALID_PARAMS
 
 	if err := valid.Struct(need); err == nil {
-		if err1 := blogArticle.ExistArticleByID(need.id); err1 == nil {
+		if err := blogArticle.ExistArticleByID(need.id); err == nil {
 			if blogTag.ExistTagByID(need.tagID) {
 				data := make(map[string]interface{})
 				data["tag_id"] = need.tagID
@@ -229,10 +228,10 @@ func EditArticle(c *gin.Context) {
 			}
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
-			logger.Info("err1: " + err1.Error())
+			logger.Debug("err: " + err.Error())
 		}
 	} else {
-		logger.Info("err: " + err.Error())
+		logger.Debug("err: " + err.Error())
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -256,16 +255,16 @@ func DeleteArticle(c *gin.Context) {
 
 	code := e.INVALID_PARAMS
 
-	if err1 := valid.Var(id, "min=1"); err1 == nil {
-		if err2 := blogArticle.ExistArticleByID(id); err2 == nil {
+	if err := valid.Var(id, "min=1"); err == nil {
+		if err := blogArticle.ExistArticleByID(id); err == nil {
 			blogArticle.DeleteArticle(id)
 			code = e.SUCCESS
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
-			logger.Info("err2" + err2.Error())
+			logger.Info("err" + err.Error())
 		}
 	} else {
-		logger.Info("err1" + err1.Error())
+		logger.Info("err" + err.Error())
 	}
 
 	c.JSON(http.StatusOK, gin.H{

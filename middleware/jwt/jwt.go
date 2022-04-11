@@ -4,9 +4,12 @@ import (
 	"gin-gorm-practice/pkg/e"
 	"gin-gorm-practice/pkg/util"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
+
+var logger = zap.NewExample().Sugar()
 
 func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -20,8 +23,10 @@ func JWT() gin.HandlerFunc {
 			claims, err := util.ParseToken(token)
 			if err != nil { // token 校验失败
 				code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
+				logger.Debug("token 校验失败", zap.String("err", err.Error()))
 			} else if time.Now().Unix() > claims.ExpiresAt { // token 过期
 				code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
+				logger.Info("token 过期", zap.String("err", err.Error()))
 			}
 		}
 		// 失败返回结果
