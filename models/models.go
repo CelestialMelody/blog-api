@@ -14,7 +14,7 @@ import (
 //var DB *gorm.DB
 
 type Model struct {
-	ID         uint   `gorm:"primary_key" json:"id" validate:"min=1"`
+	ID         int    `gorm:"primary_key" json:"id" validate:"min=1"`
 	CreatedON  string `json:"created_on"` // 数据库时间改为varchar了
 	ModifiedON string `json:"modified_on"`
 	//DeletedAt  string `json:"deleted_on" gorm:"column:deleted_on"` // 并没有实现
