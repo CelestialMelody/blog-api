@@ -66,7 +66,10 @@ func AddTags(c *gin.Context) {
 				code = e.ERROR_ADD_TAG // 添加失败
 			}
 		} else {
-			code = e.ERROR_EXIST_TAG // 已存在
+			code = e.ERROR_EXIST_TAG           // 已存在
+			for _, err := range valid.Errors { // demo 测试自己的日志
+				logging.Info(err.Key, err.Message)
+			}
 		}
 	} else {
 		zap.L().Debug("参数错误", zap.Any("err", valid.Errors))
@@ -126,6 +129,9 @@ func EditTags(c *gin.Context) {
 			blogTag.EditTag(id, data) //
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
+			for _, err := range valid.Errors { // demo 测试自己的日志
+				logging.Info(err.Key, err.Message)
+			}
 		}
 	} else {
 		for _, err := range valid.Errors { // demo 测试自己的日志
@@ -157,6 +163,9 @@ func DeleteTags(c *gin.Context) {
 			blogTag.DeleteTag(id)
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
+			for _, err := range valid.Errors { // demo 测试自己的日志
+				logging.Info(err.Key, err.Message)
+			}
 		}
 	} else {
 		for _, err := range valid.Errors { // demo 测试自己的日志
