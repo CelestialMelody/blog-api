@@ -4,10 +4,12 @@ import (
 	"gin-gorm-practice/conf/setting"
 	"gin-gorm-practice/models/blogTag"
 	"gin-gorm-practice/pkg/e"
+	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -31,6 +33,7 @@ func GetTags(c *gin.Context) {
 
 	data["lists"] = blogTag.GetTags(util.GetPage(c), setting.PageSize, maps) // maps: name state
 	data["total"] = blogTag.GetTagTotal(maps)
+	logging.Debug("GetTags: ", data)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
@@ -54,15 +57,21 @@ func AddTags(c *gin.Context) {
 
 	code := e.INVALID_PARAMS
 	if !valid.HasErrors() {
+		zap.L().Debug("AddTags: ", zap.Any("valid", valid.HasErrors()), zap.Any("valid.Errors", valid.Errors))
 		if !blogTag.ExistTagByName(name) { // 判断是否存在
-			//blogTag.AddTag(name, state, createdBy)
 			if blogTag.AddTag(name, state, createdBy) { // 添加
 				code = e.SUCCESS
 			} else {
+				logging.Info("添加多个文章标签失败")
 				code = e.ERROR_ADD_TAG // 添加失败
 			}
 		} else {
 			code = e.ERROR_EXIST_TAG // 已存在
+		}
+	} else {
+		zap.L().Debug("参数错误", zap.Any("err", valid.Errors))
+		for _, err := range valid.Errors { // demo 测试自己的日志
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
@@ -97,7 +106,6 @@ func EditTags(c *gin.Context) {
 
 	// 验证参数
 	valid.Required(id, "id").Message("ID不能为空")
-	//valid.Required(name, "name").Message("名称不能为空")
 	valid.Required(modifiedBy, "modified_by").Message("修改人不能为空")
 	valid.MaxSize(modifiedBy, 100, "modified_by").Message("修改人最长为100字符")
 	valid.MaxSize(name, 100, "name").Message("名称最长为100字符")
@@ -118,6 +126,10 @@ func EditTags(c *gin.Context) {
 			blogTag.EditTag(id, data) //
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
+		}
+	} else {
+		for _, err := range valid.Errors { // demo 测试自己的日志
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
@@ -145,6 +157,10 @@ func DeleteTags(c *gin.Context) {
 			blogTag.DeleteTag(id)
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
+		}
+	} else {
+		for _, err := range valid.Errors { // demo 测试自己的日志
+			logging.Info(err.Key, err.Message)
 		}
 	}
 

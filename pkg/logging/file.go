@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	logSavePath = "runtime/logs/"
+	//logSavePath = "runtime/logs/"
+	logSavePath = "runtime\\logs\\"
 	logSaveName = "log"
 	logFileExt  = "log" // 日志文件后缀
 	timeFormat  = "20220411"
@@ -20,7 +21,8 @@ func getLogFilePath() string {
 }
 
 func getLogFileFullPath() string {
-	preFixPath := getLogFilePath()
+	dir, _ := os.Getwd()                 // 返回当前工作目录
+	preFixPath := dir + getLogFilePath() // 当前工作目录+日志文件目录
 	suffixPath := fmt.Sprintf("%s%s.%s", logSaveName,
 		time.Now().Format(timeFormat), logFileExt)
 	return fmt.Sprintf("%s%s", preFixPath, suffixPath)
@@ -30,8 +32,10 @@ func makeDir() error {
 	dir, _ := os.Getwd() // 返回当前工作目录
 	err := os.MkdirAll(dir+getLogFilePath(), os.ModePerm)
 	if err != nil {
+		logger.Debug("创建日志目录失败", zap.Error(err))
 		return err
 	}
+	logger.Debug("创建日志目录成功", zap.String("dir", dir+getLogFilePath()))
 	return nil
 }
 
@@ -54,7 +58,7 @@ func openLogFile() *os.File {
 		return nil
 	}
 	// 打开日志文件
-	file, err := os.OpenFile(getLogFileFullPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) // 644 权限 rw-r--r--
+	file, err := os.OpenFile(getLogFileFullPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm) // 0777; 644 权限 rw-r--r--
 	if err != nil {
 		logger.Error("打开日志文件失败", zap.String("err", err.Error()))
 		return nil

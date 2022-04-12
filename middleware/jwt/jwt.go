@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"gin-gorm-practice/pkg/e"
+	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -23,10 +24,12 @@ func JWT() gin.HandlerFunc {
 			claims, err := util.ParseToken(token)
 			if err != nil { // token 校验失败
 				code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
-				logger.Debug("token 校验失败", zap.String("err", err.Error()))
+				logging.Error("ParseTokenFailed", zap.Error(err)) // demo 测试自己的日志输出
+				logger.Error("token 校验失败", zap.String("err", err.Error()))
 			} else if time.Now().Unix() > claims.ExpiresAt { // token 过期
 				code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
-				logger.Info("token 过期", zap.String("err", err.Error()))
+				logging.Error("TokenOutOfDate", zap.Error(err)) // demo 测试自己的日志输出
+				logger.Error("token 过期", zap.String("err", err.Error()))
 			}
 		}
 		// 失败返回结果
@@ -37,6 +40,9 @@ func JWT() gin.HandlerFunc {
 				"data":  data,
 				"token": token,
 			})
+
+			logging.Fatal("JWT", zap.String("err", e.GetMsg(code))) // demo 测试自己的日志输出
+			logger.Panic("token 校验失败", zap.String("err", e.GetMsg(code)))
 
 			// 终止后续操作
 			c.Abort()
