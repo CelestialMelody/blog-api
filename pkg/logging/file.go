@@ -9,11 +9,12 @@ import (
 
 var (
 	//logSavePath = "runtime/logs/"
-	logSavePath = "runtime\\logs\\"
+	logSavePath = "\\runtime\\logs\\"
 	logSaveName = "log"
 	logFileExt  = "log" // 日志文件后缀
-	timeFormat  = "20220411"
-	logger      = zap.NewExample()
+	//timeFormat  = "20060102" // go 诞生日期
+	timeFormat = "20060102150405" // go 诞生日期
+	logger     = zap.NewExample()
 )
 
 func getLogFilePath() string {
@@ -21,8 +22,11 @@ func getLogFilePath() string {
 }
 
 func getLogFileFullPath() string {
-	dir, _ := os.Getwd()                 // 返回当前工作目录
-	preFixPath := dir + getLogFilePath() // 当前工作目录+日志文件目录
+	dir, _ := os.Getwd()                 // 获取当前文件所在目录
+	preFixPath := dir + getLogFilePath() // 日志文件目录
+
+	zap.L().Debug("logger", zap.String("preFixPath", preFixPath))
+
 	suffixPath := fmt.Sprintf("%s%s.%s", logSaveName,
 		time.Now().Format(timeFormat), logFileExt)
 	return fmt.Sprintf("%s%s", preFixPath, suffixPath)
@@ -58,7 +62,7 @@ func openLogFile() *os.File {
 		return nil
 	}
 	// 打开日志文件
-	file, err := os.OpenFile(getLogFileFullPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm) // 0777; 644 权限 rw-r--r--
+	file, err := os.OpenFile(getLogFileFullPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644) // 644 权限 rw-r--r--
 	if err != nil {
 		logger.Error("打开日志文件失败", zap.String("err", err.Error()))
 		return nil
