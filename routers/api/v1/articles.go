@@ -5,6 +5,7 @@ import (
 	"gin-gorm-practice/models/blogArticle"
 	"gin-gorm-practice/models/blogTag"
 	"gin-gorm-practice/pkg/e"
+	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
 	"github.com/beego/beego/v2/core/validation"
 	"github.com/gin-gonic/gin"
@@ -71,9 +72,14 @@ func GetArticles(c *gin.Context) {
 		state int `validate:"oneof=0 1"`
 		tagId int `validate:"min=1"`
 	}
-	var need needValid
-	need.state = -1
-	need.tagId = -1
+	//var need needValid
+	//need.state = -1
+	//need.tagId = -1
+
+	need := &needValid{
+		state: -1,
+		tagId: -1,
+	}
 
 	if arg := c.Query("state"); arg != "" {
 		need.state = com.StrTo(arg).MustInt()
@@ -87,6 +93,7 @@ func GetArticles(c *gin.Context) {
 
 	code := e.INVALID_PARAMS
 
+	// v0.4.1 validator貌似没有检验到必填项
 	if err := valid.Struct(need); err == nil {
 		code = e.SUCCESS
 		data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.PageSize, maps)
@@ -94,6 +101,8 @@ func GetArticles(c *gin.Context) {
 	} else {
 		logger.Info(err.Error())
 		code = e.ERROR_NOT_EXIST_ARTICLE
+		logging.Error("validate error", zap.String("error", err.Error()))
+		logging.LoggoZap.Error("validate error", zap.String("error", err.Error()))
 	}
 
 	c.JSON(http.StatusOK, gin.H{

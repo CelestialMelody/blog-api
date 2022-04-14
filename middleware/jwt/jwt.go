@@ -41,8 +41,9 @@ func JWT() gin.HandlerFunc {
 				"token": token,
 			})
 
-			logging.Fatal("JWT", zap.String("err", e.GetMsg(code))) // demo 测试自己的日志输出
-			logger.Panic("token 校验失败", zap.String("err", e.GetMsg(code)))
+			logging.Error("JWT", zap.String("err", e.GetMsg(code)))          // demo 测试自己的日志输出
+			logging.LoggoZap.Error("JWT", zap.String("err", e.GetMsg(code))) // demo 测试自己的日志输出
+			logger.Error("token 校验失败", zap.String("err", e.GetMsg(code)))
 
 			// 终止后续操作
 			c.Abort()
