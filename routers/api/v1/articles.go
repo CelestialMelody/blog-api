@@ -5,7 +5,6 @@ import (
 	"gin-gorm-practice/models/blogArticle"
 	"gin-gorm-practice/models/blogTag"
 	"gin-gorm-practice/pkg/e"
-	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
 	"github.com/beego/beego/v2/core/validation"
 	"github.com/gin-gonic/gin"
@@ -99,10 +98,13 @@ func GetArticles(c *gin.Context) {
 		data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.PageSize, maps)
 		data["total"] = blogArticle.GetArticleTotalCount(maps)
 	} else {
-		logger.Info(err.Error())
 		code = e.ERROR_NOT_EXIST_ARTICLE
-		logging.Error("validate error", zap.String("error", err.Error()))
-		logging.LoggoZap.Error("validate error", zap.String("error", err.Error()))
+		//logger.Info(err.Error())
+		//logging.Error("validate error", zap.String("error", err.Error()))
+		//logging.LoggoZap.Error("validate error", zap.String("error", err.Error()))
+
+		logger.Info("validate error", zap.Any("error", err))
+		logger.Info("validate error(string)", zap.String("error", err.Error()))
 	}
 
 	c.JSON(http.StatusOK, gin.H{

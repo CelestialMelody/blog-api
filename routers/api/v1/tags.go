@@ -72,7 +72,8 @@ func AddTags(c *gin.Context) {
 			}
 		}
 	} else {
-		zap.L().Debug("参数错误", zap.Any("err", valid.Errors))
+		// 打印不出来 这种方式没法直接打印
+		//zap.L().Debug("参数错误", zap.Any("err", valid.Errors))
 		for _, err := range valid.Errors { // demo 测试自己的日志
 			logging.Info(err.Key, err.Message)
 			logging.LoggoZap.Error(
@@ -80,6 +81,10 @@ func AddTags(c *gin.Context) {
 				zap.Any("err", err.Key),
 				zap.Any("err", err.Message),
 			)
+			// 打印不出来 测试
+			//logger := zap.NewExample()
+			//logger.Info("AddTags: ", zap.Any("err", err.Key), zap.Any("err", err.Message))
+			//zap.S().Error("AddTags: ", zap.Any("err", err.Key), zap.Any("err", err.Message))
 		}
 	}
 
