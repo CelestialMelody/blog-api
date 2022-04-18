@@ -54,7 +54,7 @@ func exit() {
 	os.Exit(0)
 }
 
-//func main() { // 用不了
+//func main() { // 用不了 应改linux环境可以
 //	// 初始化配置
 //	endless.DefaultReadTimeOut = time.Duration(setting.ReadTimeout)
 //	endless.DefaultWriteTimeOut = time.Duration(setting.WriteTimeout)
