@@ -15,6 +15,18 @@ var (
 	valid  = validator.New()
 )
 
+// 架构验证: 值应为以下选项之一: "array", "boolean", "integer", "null", "number", "object", "string", "file"
+
+// GetAuth 获取用户信息
+// @Summary 获取用户信息
+// @Description 获取用户信息
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param username query string true "用户名"
+// @Param password query string true "密码"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /auth [get]
 func GetAuth(c *gin.Context) {
 	type needValid struct {
 		Username string `json:"username" validate:"required"`

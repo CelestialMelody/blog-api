@@ -1,0 +1,285 @@
+basePath: /api/v1
+host: localhost:8088
+info:
+  contact:
+    name: API Support
+  description: gin-gorm-practice
+  license:
+    name: MIT
+  title: gin-gorm-practice
+  version: "1.0"
+paths:
+  /api/v1/articles:
+    get:
+      parameters:
+      - description: TagID
+        in: query
+        name: tag_id
+        type: integer
+      - description: State
+        in: query
+        name: state
+        type: integer
+      - description: CreatedBy
+        in: query
+        name: created_by
+        type: integer
+      - description: Keyword
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Get multiple articles
+    post:
+      parameters:
+      - description: TagID
+        in: body
+        name: tag_id
+        required: true
+        schema:
+          type: integer
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Desc
+        in: body
+        name: desc
+        required: true
+        schema:
+          type: string
+      - description: Content
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: CreatedBy
+        in: body
+        name: created_by
+        required: true
+        schema:
+          type: string
+      - description: State
+        in: body
+        name: state
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Add an article
+    put:
+      parameters:
+      - description: ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: TagID
+        in: body
+        name: tag_id
+        required: true
+        schema:
+          type: integer
+      - description: Title
+        in: body
+        name: title
+        required: true
+        schema:
+          type: string
+      - description: Desc
+        in: body
+        name: desc
+        required: true
+        schema:
+          type: string
+      - description: Content
+        in: body
+        name: content
+        required: true
+        schema:
+          type: string
+      - description: ModifiedBy
+        in: body
+        name: modified_by
+        required: true
+        schema:
+          type: string
+      - description: State
+        in: body
+        name: state
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"msg":"ok","data":{},"article_msg":"edit an article"}'
+          schema:
+            type: string
+      summary: Edit an article
+  /api/v1/articles/{id}:
+    delete:
+      description: Delete an article
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Delete an article
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code:200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Get a single article
+  /api/v1/tags:
+    get:
+      description: 获取所有标签
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        type: string
+      - description: State
+        in: query
+        name: state
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取所有标签
+    post:
+      description: 添加多个文章标签
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: State
+        in: query
+        name: state
+        type: integer
+      - description: CreatedBy
+        in: query
+        name: created_by
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 添加多个文章标签
+  /api/v1/tags/{id}:
+    delete:
+      description: 删除多个文章标签
+      parameters:
+      - description: ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: DeleteTags
+    put:
+      description: 编辑多个文章标签
+      parameters:
+      - description: ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: State
+        in: query
+        name: state
+        type: integer
+      - description: ModifiedBy
+        in: query
+        name: modified_by
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 编辑多个文章标签
+  /auth:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户信息
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取用户信息
+      tags:
+      - auth
+swagger: "2.0"
