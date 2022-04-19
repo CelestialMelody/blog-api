@@ -1,14 +1,10 @@
 package routers
 
 import (
-	"gin-gorm-practice/docs"
 	"gin-gorm-practice/middleware/jwt"
 	"gin-gorm-practice/routers/api"
 	v1 "gin-gorm-practice/routers/api/v1"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	//"github.com/swaggo/gin-swagger/swaggerFiles" // 不可用
 )
 
 func InitRouter() *gin.Engine {
@@ -22,8 +18,6 @@ func InitRouter() *gin.Engine {
 	router.Use(gin.Recovery()) // 异常处理
 	gin.SetMode(gin.DebugMode) //设置gin的模式，debug模式
 
-	docs.SwaggerInfo.BasePath = "/api/v1"
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// JWT 验证
 	router.GET("/auth", api.GetAuth)
 

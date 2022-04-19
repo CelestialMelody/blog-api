@@ -5,7 +5,6 @@ import (
 	"gin-gorm-practice/models/blogArticle"
 	"gin-gorm-practice/models/blogTag"
 	"gin-gorm-practice/pkg/e"
-	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
 	"github.com/beego/beego/v2/core/validation"
 	"github.com/gin-gonic/gin"
@@ -16,11 +15,10 @@ import (
 )
 
 // GetArticle
-// @Summary Get a single article
-// @Produce  json
-// @Param id path int true "ID"
-// @Success 200 {string} json "{"code:200,"data":{},"msg":"ok"}"
-// @Router /api/v1/articles/{id} [get]
+// @Title Get
+// @Description get articles
+// @Success 200 {object} models.Article
+// @router / [get]
 func GetArticle(c *gin.Context) {
 	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
@@ -43,9 +41,8 @@ func GetArticle(c *gin.Context) {
 		}
 	} else {
 		for _, err := range valid.Errors {
-			// 自己的日志
-			logging.LoggoZap.Info(err.Key, zap.Any("message", err.Message))
 			logger.Info(err.Key, zap.String("message", err.Message))
+			//logger.Error(err.Key, zap.String("message", err.Message))
 		}
 	}
 
@@ -58,14 +55,10 @@ func GetArticle(c *gin.Context) {
 }
 
 // GetArticles
-// @Summary Get multiple articles
-// @Produce  json
-// @Param tag_id query int false "TagID"
-// @Param state query int false "State"
-// @Param created_by query int false "CreatedBy"
-// @Param keyword query string false "Keyword"
-// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/articles [get]
+// @Title Get
+// @Description get articles
+// @Success 200 {object} models.Article
+// @router / [get]
 func GetArticles(c *gin.Context) {
 	// 获取参数
 	data := make(map[string]interface{})
@@ -78,6 +71,9 @@ func GetArticles(c *gin.Context) {
 		state int `validate:"oneof=0 1"`
 		tagId int `validate:"min=1"`
 	}
+	//var need needValid
+	//need.state = -1
+	//need.tagId = -1
 
 	need := &needValid{
 		state: -1,
@@ -103,9 +99,12 @@ func GetArticles(c *gin.Context) {
 		data["total"] = blogArticle.GetArticleTotalCount(maps)
 	} else {
 		code = e.ERROR_NOT_EXIST_ARTICLE
+		//logger.Info(err.Error())
+		//logging.Error("validate error", zap.String("error", err.Error()))
+		//logging.LoggoZap.Error("validate error", zap.String("error", err.Error()))
+
 		logger.Info("validate error", zap.Any("error", err))
-		// 自己的日志
-		logging.LoggoZap.Info("validate error", zap.Any("message", err))
+		logger.Info("validate error(string)", zap.String("error", err.Error()))
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -114,19 +113,15 @@ func GetArticles(c *gin.Context) {
 		"data":        data,
 		"article_msg": "get articles",
 	})
+	// 没看到返回结果 只能手动加了
+	logger.Info("GetArticles", zap.Any("data", data))
 }
 
 // AddArticle
-// @Summary Add an article
-// @Produce  json
-// @Param tag_id body int true "TagID"
-// @Param title body string true "Title"
-// @Param desc body string true "Desc"
-// @Param content body string true "Content"
-// @Param created_by body string true "CreatedBy"
-// @Param state body int true "State"
-// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/articles [post]
+// @Title Post
+// @Description post an article
+// @Success 200 {object} models.Article
+// @router / [post]
 func AddArticle(c *gin.Context) {
 	// 获取参数
 	type needValid struct {
@@ -172,16 +167,12 @@ func AddArticle(c *gin.Context) {
 				code = e.SUCCESS
 			} else {
 				logger.Info("err: " + err.Error())
-				// 自己的日志
-				logging.LoggoZap.Info("validate error", zap.Any("message", err))
 			}
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
 		}
 	} else {
 		logger.Info("err: " + err.Error())
-		// 自己的日志
-		logging.LoggoZap.Info("validate error", zap.Any("message", err))
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -193,17 +184,10 @@ func AddArticle(c *gin.Context) {
 }
 
 // EditArticle
-// @Summary Edit an article
-// @Produce  json
-// @Param id body int true "ID"
-// @Param tag_id body int true "TagID"
-// @Param title body string true "Title"
-// @Param desc body string true "Desc"
-// @Param content body string true "Content"
-// @Param modified_by body string true "ModifiedBy"
-// @Param state body int true "State"
-// @Success 200 {string} json "{"code":200,"msg":"ok","data":{},"article_msg":"edit an article"}"
-// @Router /api/v1/articles [put]
+// @Title Put
+// @Description edit an article
+// @Success 200 {object} models.Article
+// @router / [put]
 func EditArticle(c *gin.Context) {
 	// 获取参数
 	type needValid struct {
@@ -256,13 +240,9 @@ func EditArticle(c *gin.Context) {
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
 			logger.Debug("err: " + err.Error())
-			// 自己的日志
-			logging.LoggoZap.Info("validate error", zap.Any("message", err))
 		}
 	} else {
 		logger.Debug("err: " + err.Error())
-		// 自己的日志
-		logging.LoggoZap.Info("validate error", zap.Any("message", err))
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -274,12 +254,10 @@ func EditArticle(c *gin.Context) {
 }
 
 // DeleteArticle
-// @Summary Delete an article
-// @Description Delete an article
-// @Produce  json
-// @Param id path int true "ID"
-// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
-// @Router /api/v1/articles/{id} [delete]
+// @Title Delete
+// @Description delete an article
+// @Success 200 {object} models.Article
+// @router / [delete]
 func DeleteArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
@@ -295,13 +273,9 @@ func DeleteArticle(c *gin.Context) {
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
 			logger.Info("err" + err.Error())
-			// 自己的日志
-			logging.LoggoZap.Info("validate error", zap.Any("message", err))
 		}
 	} else {
 		logger.Info("err" + err.Error())
-		// 自己的日志
-		logging.LoggoZap.Info("validate error", zap.Any("message", err))
 	}
 
 	c.JSON(http.StatusOK, gin.H{
