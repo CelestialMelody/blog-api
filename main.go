@@ -12,6 +12,13 @@ import (
 	"time"
 )
 
+// @title           gin-gorm-practice
+// @version         1.0
+// @description   	gin-gorm-practice
+// @contact.name    API Support
+// @license.name    MIT
+// @host            localhost:8088
+// @BasePath        /api/v1
 func main() {
 	router := routers.InitRouter()
 

@@ -14,6 +14,15 @@ import (
 )
 
 // GetTags - 获取多个文章标签 GET
+// @Summary GetTags
+// @Produce json
+// @Description Get multiple article tags
+// @Param name query string false "标签名称"
+// @Param state query int false "状态"
+// @Param page query int false "页码"
+// @Param page_size query int false "每页数量"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags [get]
 func GetTags(c *gin.Context) {
 	name := c.Query("name")
 	maps := make(map[string]interface{})
@@ -43,6 +52,14 @@ func GetTags(c *gin.Context) {
 }
 
 // AddTags - 添加多个文章标签 POST
+// @Summary AddTags
+// @Description Add multiple article tags
+// @Produce json
+// @Param name query string true "标签名称"
+// @Param state query int false "状态"
+// @Param created_by query string true "创建人"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags [post]
 func AddTags(c *gin.Context) {
 	name := c.Query("name")
 	state := com.StrTo(c.DefaultQuery("state", "0")).MustInt()
@@ -72,8 +89,6 @@ func AddTags(c *gin.Context) {
 			}
 		}
 	} else {
-		// 打印不出来 这种方式没法直接打印
-		//zap.L().Debug("参数错误", zap.Any("err", valid.Errors))
 		for _, err := range valid.Errors { // demo 测试自己的日志
 			logging.Info(err.Key, err.Message)
 			logging.LoggoZap.Error(
@@ -81,10 +96,6 @@ func AddTags(c *gin.Context) {
 				zap.Any("err", err.Key),
 				zap.Any("err", err.Message),
 			)
-			// 打印不出来 测试
-			//logger := zap.NewExample()
-			//logger.Info("AddTags: ", zap.Any("err", err.Key), zap.Any("err", err.Message))
-			//zap.S().Error("AddTags: ", zap.Any("err", err.Key), zap.Any("err", err.Message))
 		}
 	}
 
@@ -93,15 +104,18 @@ func AddTags(c *gin.Context) {
 		"msg":  e.GetMsg(code),
 		"data": make(map[string]string),
 	})
-
-	//logrus.Println(gin.H{
-	//	"code": code,
-	//	"msg":  e.GetMsg(code),
-	//	"data": make(map[string]string),
-	//})
 }
 
 // EditTags - 编辑多个文章标签 PUT update
+// @Summary EditTags
+// @Description Edit multiple article tags
+// @Produce json
+// @Param id path int true "ID"
+// @Param name query string true "标签名称"
+// @Param state query int false "状态"
+// @Param modified_by query string true "修改人"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags/{id} [put]
 func EditTags(c *gin.Context) {
 	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
@@ -156,6 +170,11 @@ func EditTags(c *gin.Context) {
 }
 
 // DeleteTags - 删除多个文章标签
+// @Summary DeleteTags
+// @Produce json
+// @Param id path int true "ID"
+// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Router /api/v1/tags/{id} [delete]
 func DeleteTags(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
 
@@ -187,3 +206,8 @@ func DeleteTags(c *gin.Context) {
 		"data": make(map[string]string),
 	})
 }
+
+// 打印不出来 测试
+//logger := zap.NewExample()
+//logger.Info("AddTags: ", zap.Any("err", err.Key), zap.Any("err", err.Message))
+//zap.S().Error("AddTags: ", zap.Any("err", err.Key), zap.Any("err", err.Message))
