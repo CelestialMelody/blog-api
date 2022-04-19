@@ -42,7 +42,8 @@ func GetTags(c *gin.Context) {
 
 	data["lists"] = blogTag.GetTags(util.GetPage(c), setting.PageSize, maps) // maps: name state
 	data["total"] = blogTag.GetTagTotal(maps)
-	logging.Debug("GetTags: ", data)
+	//logging.Debug("GetTags: ", data)
+	logging.LoggoZap.Debug("GetTags Debug", zap.Any("data:", data))
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
@@ -79,18 +80,20 @@ func AddTags(c *gin.Context) {
 			if blogTag.AddTag(name, state, createdBy) { // 添加
 				code = e.SUCCESS
 			} else {
-				logging.Info("添加多个文章标签失败")
+				//logging.Info("添加多个文章标签失败")
+				logging.LoggoZap.Info("添加多个文章标签失败")
 				code = e.ERROR_ADD_TAG // 添加失败
 			}
 		} else {
 			code = e.ERROR_EXIST_TAG           // 已存在
 			for _, err := range valid.Errors { // demo 测试自己的日志
-				logging.Info(err.Key, err.Message)
+				//logging.Info(err.Key, err.Message)
+				logging.LoggoZap.Info("err", zap.Any("err key", err.Key), zap.Any("err value", err.Value))
 			}
 		}
 	} else {
 		for _, err := range valid.Errors { // demo 测试自己的日志
-			logging.Info(err.Key, err.Message)
+			//logging.Info(err.Key, err.Message)
 			logging.LoggoZap.Error(
 				"AddTags: ",
 				zap.Any("err", err.Key),
@@ -153,11 +156,16 @@ func EditTags(c *gin.Context) {
 			blogTag.EditTag(id, data) //
 		} else {
 			code = e.ERROR_NOT_EXIST_TAG
-
+			logging.LoggoZap.Error("EditTags: ", zap.Any("err", "标签不存在"))
 		}
 	} else {
 		for _, err := range valid.Errors { // demo 测试自己的日志
-			logging.Info(err.Key, err.Message)
+			//logging.Info(err.Key, err.Message)
+			logging.LoggoZap.Error(
+				"EditTags: ",
+				zap.Any("err", err.Key),
+				zap.Any("err", err.Message),
+			)
 		}
 	}
 
@@ -190,13 +198,16 @@ func DeleteTags(c *gin.Context) {
 			blogTag.DeleteTag(id)
 		} else {
 			code = e.ERROR_NOT_EXIST_ARTICLE
-			for _, err := range valid.Errors { // demo 测试自己的日志
-				logging.Info(err.Key, err.Message)
-			}
+			logging.LoggoZap.Error("err", zap.Any("err", "文章不存在"))
 		}
 	} else {
 		for _, err := range valid.Errors { // demo 测试自己的日志
-			logging.Info(err.Key, err.Message)
+			//logging.Info(err.Key, err.Message)
+			logging.LoggoZap.Error(
+				"DeleteTags: ",
+				zap.Any("err", err.Key),
+				zap.Any("err", err.Message),
+			)
 		}
 	}
 

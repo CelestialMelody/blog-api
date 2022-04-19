@@ -24,8 +24,9 @@ type Article struct {
 	Content    string      `json:"content" validate:"min=1"`
 	CreatedBy  string      `json:"created_by" validate:"min=1,max=100"`
 	ModifiedBy string      `json:"modified_by" validate:"min=1,max=100"`
-	DeletedOn  string      `json:"deleted_on" validate:"min=1,max=100"`
-	State      int         `json:"state" validate:"oneof=0 1"`
+	//DeletedOn     string      `json:"deleted_on" validate:"min=1,max=100"`
+	// 做软删除
+	State int `json:"state" validate:"oneof=0 1"`
 }
 
 func init() {
@@ -162,17 +163,3 @@ func DeleteArticle(id int) bool {
 //`state` tinyint(3) unsigned DEFAULT '1' COMMENT '状态 0为禁用1为启用',
 //PRIMARY KEY (`id`)
 //) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文章管理';
-
-//// ExistArticleByTagID 根据TagID查询文章是否存在; tag_id 这个在tag.go中有
-//func ExistArticleByTagID(tagID int) error {
-//	var article Article
-//	// select id from blog_article where tag_id = ?
-//	err := instanceDB.MysqlDB.Select("id").Where("tag_id = ?", tagID).First(&article).Error
-//	if err != nil && err != gorm.ErrRecordNotFound {
-//		return err
-//	}
-//	if article.ID > 0 {
-//		return nil
-//	}
-//	return nil
-//}

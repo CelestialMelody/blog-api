@@ -28,10 +28,10 @@ const (
 	FATAL
 )
 
-func init() {
-	F = openLogFile() // 写入日志文件
-	loggo = log.New(F, DefaultPrefix, log.LstdFlags)
-}
+//func init() {
+//	F = openLogFile() // 写入日志文件
+//	loggo = log.New(F, DefaultPrefix, log.LstdFlags)
+//}
 
 // 设置日志前缀; 有点难理解
 func setPrefix(level Level) {

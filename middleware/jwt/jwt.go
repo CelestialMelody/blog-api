@@ -24,12 +24,14 @@ func JWT() gin.HandlerFunc {
 			claims, err := util.ParseToken(token)
 			if err != nil { // token 校验失败
 				code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
-				logging.Error("ParseTokenFailed", zap.Error(err)) // demo 测试自己的日志输出
+				//logging.Error("ParseTokenFailed", zap.Error(err)) // demo 测试自己的日志输出
 				logger.Error("token 校验失败", zap.String("err", err.Error()))
+				logging.LoggoZap.Error("token 校验失败", zap.String("err", err.Error()))
 			} else if time.Now().Unix() > claims.ExpiresAt { // token 过期
 				code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
-				logging.Error("TokenOutOfDate", zap.Error(err)) // demo 测试自己的日志输出
+				//logging.Error("TokenOutOfDate", zap.Error(err)) // demo 测试自己的日志输出
 				logger.Error("token 过期", zap.String("err", err.Error()))
+				logging.LoggoZap.Error("token 过期", zap.String("err", err.Error()))
 			}
 		}
 		// 失败返回结果
@@ -41,7 +43,7 @@ func JWT() gin.HandlerFunc {
 				"token": token,
 			})
 
-			logging.Error("JWT", zap.String("err", e.GetMsg(code)))          // demo 测试自己的日志输出
+			//logging.Error("JWT", zap.String("err", e.GetMsg(code)))          // demo 测试自己的日志输出
 			logging.LoggoZap.Error("JWT", zap.String("err", e.GetMsg(code))) // demo 测试自己的日志输出
 			logger.Error("token 校验失败", zap.String("err", e.GetMsg(code)))
 

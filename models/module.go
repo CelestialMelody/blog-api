@@ -15,9 +15,12 @@ type DBList struct {
 }
 
 type Module struct {
-	ID         int    `json:"id" gorm:"primary_key;column:id;type:int(10) unsigned;not null;default:0;comment:'主键'" binding:"required"`
-	CreatedOn  string `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required"` // v0.2.2 前写错了类型
-	ModifiedOn string `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required"`
+	ID         int    `json:"id" gorm:"primary_key;column:id;type:int(10) unsigned;not null;default:0;comment:'主键'" binding:"required" validate:"min=1 max=100"`
+	CreatedOn  string `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required" validate:"min=1 max=100"`
+	ModifiedOn string `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required" validate:"min=1 max=100"`
+	//CreatedOn  time.Time      `json:"created_on" gorm:"column:created_on;type:varchar(100);not null;default:'';comment:'创建时间'" binding:"required" validate:"min=1 max=100"`
+	//ModifiedOn time.Time      `json:"modified_on" gorm:"column:modified_on;type:varchar(100);not null;default:'';comment:'修改时间'" binding:"required" validate:"min=1 max=100"`
+	DeleteOn gorm.DeletedAt `json:"deleted_on" gorm:"column:deleted_on;type:varchar(100);not null;default:'';comment:'删除时间'" binding:"required" validate:"min=1 max=100"`
 }
 
 type BeforeBD interface {
@@ -62,6 +65,8 @@ func InitDB() *DBList {
 	database.SetMaxOpenConns(100)    // 设置最大连接数
 	database.SetConnMaxLifetime(100) // 设置连接最大存活时间
 
+	// 注册回调函数
+	//err = db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
 	return dbList
 }
 

@@ -1,0 +1,314 @@
+basePath: /api/v1
+definitions:
+  blogArticle.Article:
+    properties:
+      content:
+        minLength: 1
+        type: string
+      created_by:
+        maxLength: 100
+        minLength: 1
+        type: string
+      created_on:
+        description: v0.2.2 前写错了类型
+        type: string
+      deleted_on:
+        maxLength: 100
+        minLength: 1
+        type: string
+      desc:
+        maxLength: 100
+        minLength: 1
+        type: string
+      id:
+        type: integer
+      modified_by:
+        maxLength: 100
+        minLength: 1
+        type: string
+      modified_on:
+        type: string
+      state:
+        enum:
+        - 0
+        - 1
+        type: integer
+      tag:
+        $ref: '#/definitions/blogTag.Tag'
+      tag_id:
+        minimum: 1
+        type: integer
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - created_on
+    - id
+    - modified_on
+    type: object
+  blogTag.Tag:
+    properties:
+      created_by:
+        type: string
+      created_on:
+        description: 数据库时间改为varchar了
+        type: string
+      id:
+        minimum: 1
+        type: integer
+      modified_by:
+        type: string
+      modified_on:
+        type: string
+      name:
+        type: string
+      state:
+        type: integer
+    type: object
+host: localhost:8088
+info:
+  contact:
+    name: API Support
+  description: gin-gorm-practice
+  license:
+    name: MIT
+  title: gin-gorm-practice
+  version: "1.0"
+paths:
+  /api/v1/articles:
+    get:
+      description: 获取多篇文章
+      parameters:
+      - description: 标签ID
+        in: query
+        name: tag_id
+        type: integer
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Get multiple articles
+      tags:
+      - 文章
+    post:
+      description: 添加文章
+      parameters:
+      - description: Article
+        in: body
+        name: article
+        required: true
+        schema:
+          $ref: '#/definitions/blogArticle.Article'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Add a article
+      tags:
+      - 文章
+  /api/v1/articles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除文章
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Delete a article
+      tags:
+      - 文章
+    get:
+      description: 获取文章
+      parameters:
+      - description: 文章ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Get a single article
+      tags:
+      - 文章
+    put:
+      description: 更新文章
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 文章
+        in: body
+        name: article
+        required: true
+        schema:
+          $ref: '#/definitions/blogArticle.Article'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: Update a article
+      tags:
+      - 文章
+  /api/v1/tags:
+    get:
+      description: Get multiple article tags
+      parameters:
+      - description: 标签名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: GetTags
+    post:
+      description: Add multiple article tags
+      parameters:
+      - description: 标签名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 创建人
+        in: query
+        name: created_by
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: AddTags
+  /api/v1/tags/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: DeleteTags
+    put:
+      description: Edit multiple article tags
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 标签名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 修改人
+        in: query
+        name: modified_by
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: EditTags
+  /auth:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户信息
+      parameters:
+      - description: 用户名
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 获取用户信息
+      tags:
+      - auth
+swagger: "2.0"

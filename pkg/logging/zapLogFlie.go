@@ -10,12 +10,11 @@ import (
 	"time"
 )
 
-// 找找如何用zap实现
-
 type ZapLevel int
 
 var LoggoZap *zap.Logger
-var DefaultCallerDepthZap = 3
+
+//var DefaultCallerDepthZap = 3
 
 func pathExists(path string) bool {
 	_, err := os.Stat(path)
