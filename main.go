@@ -20,13 +20,15 @@ import (
 // @host            localhost:8088
 // @BasePath        /api/v1
 func main() {
+	setting.SetUp()
+
 	router := routers.InitRouter()
 
 	server := &http.Server{
-		Addr:           fmt.Sprintf(":%d", setting.HTTPPort),
+		Addr:           fmt.Sprintf(":%d", setting.ServerSetting.HttpPort),
 		Handler:        router,
-		ReadTimeout:    time.Duration(setting.ReadTimeout),
-		WriteTimeout:   time.Duration(setting.WriteTimeout),
+		ReadTimeout:    time.Duration(setting.ServerSetting.ReadTimeout),
+		WriteTimeout:   time.Duration(setting.ServerSetting.WriteTimeout),
 		MaxHeaderBytes: 1 << 20,
 	}
 

@@ -15,6 +15,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
+	github.com/robfig/cron/v3 v3.0.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.10.1
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect

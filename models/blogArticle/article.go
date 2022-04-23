@@ -119,6 +119,11 @@ func DeleteArticle(id int) bool {
 	return true
 }
 
+func CleanAllArticle() bool {
+	instanceDB.MysqlDB.Unscoped().Where("deleted_on != ?", 0).Delete(&Article{})
+	return true
+}
+
 //func init() {
 //	instanceDB = models.InitDB()
 //logger := zap.NewExample().Sugar()

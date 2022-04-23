@@ -18,7 +18,7 @@ type Tag struct {
 }
 
 func init() {
-	instanceDB = models.InitDatabase()
+	instanceDB = models.SetUp()
 }
 
 // BeforeCreate 新建前; gorm v1 *gorm.Scope.SetColumn("CreatedOn", time.Now()); v2 *gorm.DB.SetColumn("CreatedOn", time.Now())
@@ -93,6 +93,11 @@ func EditTag(id int, data interface{}) bool {
 
 func DeleteTag(id int) bool {
 	instanceDB.Where("id = ?", id).Delete(&Tag{})
+	return true
+}
+
+func ClearAllTag() bool {
+	instanceDB.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
 	return true
 }
 
