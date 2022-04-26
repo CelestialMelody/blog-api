@@ -2,6 +2,7 @@ package util
 
 import (
 	"gin-gorm-practice/conf/setting"
+	"gin-gorm-practice/pkg/logging"
 	"github.com/dgrijalva/jwt-go"
 	"go.uber.org/zap"
 	"time"
@@ -16,17 +17,17 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func init() {
-	//jwtSecret = []byte(setting.GlobalConfig.GetString("app.jwt_secret"))
-	// 方式2
-	sec, err := setting.Cfg.GetSection("app")
-	if err != nil {
-		logger.Error("init jwt secret error", zap.Error(err))
-		return
-	}
-	jwtSecret = []byte(sec.Key("jwt_secret").String())
-	logger.Info("jetSecret", zap.String("jetSecret", string(jwtSecret)))
-}
+//func init() {
+//jwtSecret = []byte(setting.GlobalConfig.GetString("app.jwt_secret"))
+// 方式2
+//sec, err := setting.Cfg.GetSection("app")
+//if err != nil {
+//	logger.Error("init jwt secret error", zap.Error(err))
+//	return
+//}
+//	jwtSecret = []byte(sec.Key("jwt_secret").String())
+//	logger.Info("jetSecret", zap.String("jetSecret", string(jwtSecret)))
+//}
 
 // GenerateToken 生成token
 func GenerateToken(username, password string) (string, error) {
@@ -45,7 +46,14 @@ func GenerateToken(username, password string) (string, error) {
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// 签名
+	//token, err := tokenClaims.SignedString(jwtSecret)
+	jwtSecret = []byte(setting.AppSetting.JwtSecret)
+	//jwtSecret = []byte(setting.GlobalConfig.GetString("app.jwt_secret"))
 	token, err := tokenClaims.SignedString(jwtSecret)
+	logging.LoggoZap.Info("token", zap.String("token", token))
+	if err != nil {
+		logging.LoggoZap.Error("generate token error", zap.Error(err))
+	}
 
 	// 报错了
 	//claims := Claims{

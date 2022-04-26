@@ -32,7 +32,6 @@ type Server struct {
 var ServerSetting = &Server{}
 
 type Database struct {
-	Type        string
 	User        string
 	Password    string
 	Host        string
@@ -57,7 +56,7 @@ func SetUp() {
 		logging.LoggoZap.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
-	if err = Cfg.Section("database").MapTo(DatabaseSetting); err != nil {
+	if err = Cfg.Section("mysql").MapTo(DatabaseSetting); err != nil {
 		logging.LoggoZap.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 

@@ -3,6 +3,7 @@ package api
 import (
 	"gin-gorm-practice/models/blogAuth"
 	"gin-gorm-practice/pkg/e"
+	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -47,11 +48,12 @@ func GetAuth(c *gin.Context) {
 		// 验证
 		if isExist := blogAuth.CheckAuth(need.Username, need.Password); isExist == true {
 			// 生成token
-			if token, errAuth := util.GenerateToken(need.Username, need.Password); errAuth == nil {
+			if token, err := util.GenerateToken(need.Username, need.Password); err == nil {
 				data["token"] = token
 				code = e.SUCCESS
 			} else {
 				code = e.ERROR_AUTH_TOKEN
+				logging.LoggoZap.Error("生成token失败", zap.Error(err))
 			}
 		} else {
 			code = e.ERROR_AUTH
@@ -62,6 +64,7 @@ func GetAuth(c *gin.Context) {
 
 	// 查看
 	logger.Info("auth", zap.Any("data", data), zap.Any("code", code))
+	logging.LoggoZap.Info("auth", zap.Any("data", data), zap.Any("code", code))
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    code,

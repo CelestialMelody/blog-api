@@ -40,7 +40,8 @@ func GetTags(c *gin.Context) {
 
 	code := e.SUCCESS
 
-	data["lists"] = blogTag.GetTags(util.GetPage(c), setting.PageSize, maps) // maps: name state
+	//data["lists"] = blogTag.GetTags(util.GetPage(c), setting.PageSize, maps) // maps: name state
+	data["lists"] = blogTag.GetTags(util.GetPage(c), setting.AppSetting.PageSize, maps) // maps: name state
 	data["total"] = blogTag.GetTagTotal(maps)
 	//logging.Debug("GetTags: ", data)
 	logging.LoggoZap.Debug("GetTags Debug", zap.Any("data:", data))
@@ -185,6 +186,7 @@ func EditTags(c *gin.Context) {
 // @Router /api/v1/tags/{id} [delete]
 func DeleteTags(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
+	logging.LoggoZap.Debug("id", zap.Any("id", id))
 
 	valid := validation.Validation{}
 	valid.Required(id, "id").Message("ID不能为空")

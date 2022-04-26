@@ -106,7 +106,8 @@ func GetArticles(c *gin.Context) {
 	// v0.4.1 validator貌似没有检验到必填项
 	if err := valid.Struct(need); err == nil {
 		code = e.SUCCESS
-		data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.PageSize, maps)
+		//data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.PageSize, maps)
+		data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
 		data["total"] = blogArticle.GetArticleTotalCount(maps)
 	} else {
 		code = e.ERROR_NOT_EXIST_ARTICLE

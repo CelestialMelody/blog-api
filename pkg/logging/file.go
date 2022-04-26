@@ -11,10 +11,10 @@ var (
 	//logSavePath = "runtime/logs/"
 	logSavePath = "\\runtime\\logs\\"
 	logSaveName = "log"
-	logFileExt  = "log" // 日志文件后缀
-	//timeFormat  = "20060102" // go 诞生日期
-	timeFormat = "20060102150405" // go 诞生日期
-	logger     = zap.NewExample()
+	logFileExt  = "log"      // 日志文件后缀
+	timeFormat  = "20060102" // go 诞生日期
+	//timeFormat = "20060102150405" // go 诞生日期
+	logger = zap.NewExample()
 )
 
 func getLogFilePath() string {

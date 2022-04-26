@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-//var DB *gorm.DB
+var DB *gorm.DB
 
 type Model struct {
 	ID         int    `gorm:"primary_key" json:"id" validate:"min=1"`
@@ -27,8 +27,10 @@ type BeforeDB interface {
 	BeforeUpdate(db *gorm.DB) error
 }
 
-func SetUp() *gorm.DB {
-	DB, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+func SetUp() {
+	//DB, err := gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+	var err error
+	DB, err = gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
 		setting.DatabaseSetting.User,
 		setting.DatabaseSetting.Password,
 		setting.DatabaseSetting.Host,
@@ -51,7 +53,7 @@ func SetUp() *gorm.DB {
 	// SetConnMaxLifetime 设置连接的最大可复用时间，超过时间的连接会被关闭。
 	mysqlDB.SetConnMaxLifetime(100)
 
-	return DB
+	//return DB
 }
 
 //func InitDatabase() *gorm.DB {

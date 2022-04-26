@@ -37,3 +37,29 @@
 [C:/Users/Unpre/go/pkg/mod/go.uber.org/zap@v4.144.8/zapcore/entry.go:14140]2022/04/14 - 23:53:47.877	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/routers/api/v1/tags.go:79	AddTags: 	{"err": "state", "err": "状态只允许0或1"}
 2022/04/15 - 18:10:11.532	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/routers/api/v1/tags.go:79	AddTags: 	{"err": "name", "err": "名称不能为空"}
 2022/04/15 - 18:10:11.535	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/routers/api/v1/tags.go:79	AddTags: 	{"err": "state", "err": "状态只允许0或1"}
+2022/04/26 - 22:37:43.100	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/models/models.go:44	数据库连接失败	{"err": "dial tcp :0: connectex: The requested address is not valid in its context."}
+2022/04/26 - 22:45:53.606	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/models/models.go:44	数据库连接失败	{"err": "dial tcp :0: connectex: The requested address is not valid in its context."}
+2022/04/26 - 22:48:35.119	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/models/models.go:44	数据库连接失败	{"err": "dial tcp :0: connectex: The requested address is not valid in its context."}
+2022/04/26 - 22:49:08.950	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/models/models.go:44	数据库连接失败	{"err": "dial tcp :0: connectex: The requested address is not valid in its context."}
+2022/04/26 - 22:54:28.084	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/models/models.go:44	数据库连接失败	{"err": "dial tcp :0: connectex: The requested address is not valid in its context."}
+2022/04/26 - 23:09:32.833	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/pkg/util/jwt.go:53	generate token error	{"error": "key is of invalid type"}
+2022/04/26 - 23:09:43.181	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/pkg/util/jwt.go:53	generate token error	{"error": "key is of invalid type"}
+2022/04/26 - 23:31:59.790	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/26 - 23:31:59.791	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/26 - 23:32:06.895	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/26 - 23:32:06.895	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/26 - 23:46:10.318	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/26 - 23:46:10.319	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/26 - 23:46:48.561	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/26 - 23:46:48.562	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/26 - 23:55:16.506	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/models/blogTag/tag.go:58	GetTags	{"err": null}
+2022/04/27 - 08:11:31.627	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/27 - 08:11:31.629	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/27 - 08:11:37.491	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/27 - 08:11:37.491	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/27 - 08:24:32.390	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/27 - 08:24:32.393	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/27 - 08:29:11.225	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "signature is invalid"}
+2022/04/27 - 08:29:11.227	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}
+2022/04/27 - 08:29:33.050	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:29	token 校验失败	{"err": "illegal base64 data at input byte 0"}
+2022/04/27 - 08:29:33.050	[31mERROR[0m	D:/Code/GO/github/gin-gorm-practice/middleware/jwt/jwt.go:47	JWT	{"err": "Token鉴权失败"}

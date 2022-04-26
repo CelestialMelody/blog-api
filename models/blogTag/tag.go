@@ -7,7 +7,9 @@ import (
 	"time"
 )
 
-var instanceDB *gorm.DB
+//var instanceDB = models.DB
+
+//var instanceDB = models.InitDB().MysqlDB
 
 type Tag struct {
 	models.Model
@@ -17,9 +19,9 @@ type Tag struct {
 	State      int    `json:"state"`
 }
 
-func init() {
-	instanceDB = models.SetUp()
-}
+//func init() {
+//	instanceDB = models.SetUp()
+//}
 
 // BeforeCreate 新建前; gorm v1 *gorm.Scope.SetColumn("CreatedOn", time.Now()); v2 *gorm.DB.SetColumn("CreatedOn", time.Now())
 func (t *Tag) BeforeCreate(db *gorm.DB) error {
@@ -49,18 +51,21 @@ func (t *Tag) BeforeUpdate(db *gorm.DB) error {
 }
 
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	instanceDB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
+	//instanceDB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
+	models.DB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
 	return
 }
 
 func GetTagTotal(maps interface{}) (count int64) {
-	instanceDB.Model(&Tag{}).Where(maps).Count(&count)
+	//instanceDB.Model(&Tag{}).Where(maps).Count(&count)
+	models.DB.Model(&Tag{}).Where(maps).Count(&count)
 	return
 }
 
 func ExistTagByName(name string) bool {
 	var tag Tag
-	instanceDB.Select("id").Where("name = ?", name).First(&tag)
+	//instanceDB.Select("id").Where("name = ?", name).First(&tag)
+	models.DB.Select("id").Where("name = ?", name).First(&tag)
 	if tag.ID > 0 {
 		return true
 	}
@@ -69,7 +74,8 @@ func ExistTagByName(name string) bool {
 
 func ExistTagByID(id int) bool {
 	var tag Tag
-	instanceDB.Select("id").Where("id = ?", id).First(&tag)
+	//instanceDB.Select("id").Where("id = ?", id).First(&tag)
+	models.DB.Select("id").Where("id = ?", id).First(&tag)
 	if tag.ID > 0 {
 		return true
 	}
@@ -82,22 +88,26 @@ func AddTag(name string, state int, createdBy string) bool {
 		State:     state,
 		CreatedBy: createdBy,
 	}
-	instanceDB.Model(&Tag{}).Create(&tag)
+	models.DB.Model(&Tag{}).Create(&tag)
+	//instanceDB.Model(&Tag{}).Create(&tag)
 	return true
 }
 
 func EditTag(id int, data interface{}) bool {
-	instanceDB.Model(&Tag{}).Where("id = ?", id).Updates(data)
+	//instanceDB.Model(&Tag{}).Where("id = ?", id).Updates(data)
+	models.DB.Model(&Tag{}).Where("id = ?", id).Updates(data)
 	return true
 }
 
 func DeleteTag(id int) bool {
-	instanceDB.Where("id = ?", id).Delete(&Tag{})
+	//instanceDB.Where("id = ?", id).Delete(&Tag{})
+	models.DB.Where("id = ?", id).Delete(&Tag{})
 	return true
 }
 
 func ClearAllTag() bool {
-	instanceDB.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
+	//instanceDB.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
+	models.DB.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
 	return true
 }
 

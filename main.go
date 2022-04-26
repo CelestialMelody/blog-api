@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"gin-gorm-practice/conf/setting"
+	"gin-gorm-practice/models"
 	"gin-gorm-practice/routers"
 	"go.uber.org/zap"
 	"net/http"
@@ -21,7 +22,7 @@ import (
 // @BasePath        /api/v1
 func main() {
 	setting.SetUp()
-
+	models.SetUp()
 	router := routers.InitRouter()
 
 	server := &http.Server{
