@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"gin-gorm-practice/conf/setting"
+	_ "gin-gorm-practice/docs" // dont forget
 	"gin-gorm-practice/models"
+	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/routers"
 	"go.uber.org/zap"
 	"net/http"
@@ -13,16 +15,13 @@ import (
 	"time"
 )
 
-// @title           gin-gorm-practice
-// @version         1.0
-// @description   	gin-gorm-practice
-// @contact.name    API Support
-// @license.name    MIT
-// @host            localhost:8088
-// @BasePath        /api/v1
+// @title Gin Gorm API
+// @version 1.0
+// @description This is a sample server celler server.
 func main() {
 	setting.SetUp()
 	models.SetUp()
+	logging.SetUp()
 	router := routers.InitRouter()
 
 	server := &http.Server{

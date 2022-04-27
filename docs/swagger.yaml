@@ -1,79 +1,8 @@
 basePath: /api/v1
-definitions:
-  blogArticle.Article:
-    properties:
-      content:
-        minLength: 1
-        type: string
-      created_by:
-        maxLength: 100
-        minLength: 1
-        type: string
-      created_on:
-        description: v0.2.2 前写错了类型
-        type: string
-      deleted_on:
-        maxLength: 100
-        minLength: 1
-        type: string
-      desc:
-        maxLength: 100
-        minLength: 1
-        type: string
-      id:
-        type: integer
-      modified_by:
-        maxLength: 100
-        minLength: 1
-        type: string
-      modified_on:
-        type: string
-      state:
-        enum:
-        - 0
-        - 1
-        type: integer
-      tag:
-        $ref: '#/definitions/blogTag.Tag'
-      tag_id:
-        minimum: 1
-        type: integer
-      title:
-        maxLength: 100
-        minLength: 1
-        type: string
-    required:
-    - created_on
-    - id
-    - modified_on
-    type: object
-  blogTag.Tag:
-    properties:
-      created_by:
-        type: string
-      created_on:
-        description: 数据库时间改为varchar了
-        type: string
-      id:
-        minimum: 1
-        type: integer
-      modified_by:
-        type: string
-      modified_on:
-        type: string
-      name:
-        type: string
-      state:
-        type: integer
-    type: object
-host: localhost:8088
 info:
-  contact:
-    name: API Support
-  description: gin-gorm-practice
-  license:
-    name: MIT
-  title: gin-gorm-practice
+  contact: { }
+  description: This is a sample server celler server.
+  title: Gin Gorm API
   version: "1.0"
 paths:
   /api/v1/articles:
@@ -109,12 +38,36 @@ paths:
     post:
       description: 添加文章
       parameters:
-      - description: Article
-        in: body
-        name: article
-        required: true
-        schema:
-          $ref: '#/definitions/blogArticle.Article'
+        - description: 标签ID
+          in: query
+          name: tag_id
+          required: true
+          type: integer
+        - description: 标题
+          in: query
+          name: title
+          required: true
+          type: string
+        - description: 描述
+          in: query
+          name: desc
+          required: true
+          type: string
+        - description: 内容
+          in: query
+          name: content
+          required: true
+          type: string
+        - description: 创建人
+          in: query
+          name: created_by
+          required: true
+          type: string
+        - description: 状态
+          in: query
+          name: state
+          required: true
+          type: integer
       produces:
       - application/json
       responses:
@@ -165,17 +118,26 @@ paths:
     put:
       description: 更新文章
       parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: 文章
-        in: body
-        name: article
-        required: true
-        schema:
-          $ref: '#/definitions/blogArticle.Article'
+        - description: ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: 标签ID
+          in: query
+          name: tag_id
+          required: true
+          type: integer
+        - description: 标题
+          in: query
+          name: title
+          required: true
+          type: string
+        - description: 描述
+          in: query
+          name: desc
+          required: true
+          type: string
       produces:
       - application/json
       responses:

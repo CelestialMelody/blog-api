@@ -7,14 +7,12 @@ import (
 	"runtime"
 )
 
-// 找找如何用zap实现
-
 type Level int
 
 var (
-	F                  *os.File // 日志文件
-	DefaultPrefix      = ""     // 如果不设置前缀，默认为
-	DefaultCallerDepth = 2      // 调用层级
+	F                  *os.File
+	DefaultCallerDepth = 2  // 调用层级
+	DefaultPrefix      = "" // 日志前缀
 	loggo              *log.Logger
 	logPrefix          = "" // 日志前缀
 	levelFlags         = []string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
@@ -32,6 +30,17 @@ const (
 //	F = openLogFile() // 写入日志文件
 //	loggo = log.New(F, DefaultPrefix, log.LstdFlags)
 //}
+
+func SetUp() {
+	var err error
+	filePath := getLogFilePath()
+	fileName := getLogFileName()
+	F, err = openLogFile(fileName, filePath)
+	if err != nil {
+		log.Fatalf("logging.Setup err: %v", err)
+	}
+	loggo = log.New(F, DefaultPrefix, log.LstdFlags)
+}
 
 // 设置日志前缀; 有点难理解
 func setPrefix(level Level) {

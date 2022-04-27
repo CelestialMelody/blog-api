@@ -1,7 +1,7 @@
 package setting
 
 import (
-	"gin-gorm-practice/pkg/logging"
+	"fmt"
 	"go.uber.org/zap"
 	"gopkg.in/ini.v1"
 	"time"
@@ -17,7 +17,12 @@ type App struct {
 	ImagePrefixUrl string
 	ImageSavePath  string
 	ImageMaxSize   int
-	ImageAllowExts []string
+	ImageAllowExt  []string
+
+	LogSavePath string
+	LogSaveName string
+	LogFileExt  string
+	TimeFormat  string
 }
 
 var AppSetting = &App{}
@@ -42,28 +47,35 @@ type Database struct {
 
 var DatabaseSetting = &Database{}
 
+var logger = zap.NewExample().Sugar()
+
 func SetUp() {
 	Cfg, err := ini.Load("conf/app.ini")
 	if err != nil {
-		logging.LoggoZap.Panic("Fail to parse 'conf/app.ini': %v", zap.Any("err", err))
+		logger.Panic("Fail to parse 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	if err = Cfg.Section("app").MapTo(AppSetting); err != nil {
-		logging.LoggoZap.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
+	//  5 MB check SetUp -> 1024 * 1024-> app.ini
+	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
+
+	fmt.Println(AppSetting.ImageAllowExt) // v0.5.3 [] 没有成功获取;
+
 	if err = Cfg.Section("server").MapTo(ServerSetting); err != nil {
-		logging.LoggoZap.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	if err = Cfg.Section("mysql").MapTo(DatabaseSetting); err != nil {
-		logging.LoggoZap.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 
-	logging.LoggoZap.Info("init conf success")
+	logger.Info("init conf success")
 }
 
 //var (
