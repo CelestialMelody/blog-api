@@ -7,9 +7,7 @@ import (
 	"time"
 )
 
-//var instanceDB = models.DB
-
-//var instanceDB = models.InitDB().MysqlDB
+//var instanceDB = models.DB // var 在init 与 main 之前执行 这样instanceDB 只能拿到nil
 
 type Tag struct {
 	models.Model
@@ -51,20 +49,17 @@ func (t *Tag) BeforeUpdate(db *gorm.DB) error {
 }
 
 func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	//instanceDB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
 	models.DB.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
 	return
 }
 
 func GetTagTotal(maps interface{}) (count int64) {
-	//instanceDB.Model(&Tag{}).Where(maps).Count(&count)
 	models.DB.Model(&Tag{}).Where(maps).Count(&count)
 	return
 }
 
 func ExistTagByName(name string) bool {
 	var tag Tag
-	//instanceDB.Select("id").Where("name = ?", name).First(&tag)
 	models.DB.Select("id").Where("name = ?", name).First(&tag)
 	if tag.ID > 0 {
 		return true
@@ -74,7 +69,6 @@ func ExistTagByName(name string) bool {
 
 func ExistTagByID(id int) bool {
 	var tag Tag
-	//instanceDB.Select("id").Where("id = ?", id).First(&tag)
 	models.DB.Select("id").Where("id = ?", id).First(&tag)
 	if tag.ID > 0 {
 		return true
@@ -89,24 +83,20 @@ func AddTag(name string, state int, createdBy string) bool {
 		CreatedBy: createdBy,
 	}
 	models.DB.Model(&Tag{}).Create(&tag)
-	//instanceDB.Model(&Tag{}).Create(&tag)
 	return true
 }
 
 func EditTag(id int, data interface{}) bool {
-	//instanceDB.Model(&Tag{}).Where("id = ?", id).Updates(data)
 	models.DB.Model(&Tag{}).Where("id = ?", id).Updates(data)
 	return true
 }
 
 func DeleteTag(id int) bool {
-	//instanceDB.Where("id = ?", id).Delete(&Tag{})
 	models.DB.Where("id = ?", id).Delete(&Tag{})
 	return true
 }
 
 func ClearAllTag() bool {
-	//instanceDB.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
 	models.DB.Unscoped().Where("deleted_on != ?", 0).Delete(&Tag{})
 	return true
 }
