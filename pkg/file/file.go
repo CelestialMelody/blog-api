@@ -22,12 +22,21 @@ func CheckNotExist(src string) bool {
 }
 
 func CheckPermission(src string) bool { // 检查权限
-	_, err := os.Stat(src)
-	return os.IsPermission(err)
+	_, err := os.Stat(src)      // 检查文件是否存在
+	return os.IsPermission(err) // true 文件不存在或者没有权限
+}
+
+func IsNotExistMkDir(src string) error {
+	if notExist := CheckNotExist(src); notExist == true {
+		if err := MkDir(src); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func MkDir(src string) error {
-	err := os.MkdirAll(src, os.ModePerm)
+	err := os.MkdirAll(src, os.ModePerm) // 创建多级目录
 	return err
 }
 

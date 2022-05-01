@@ -10,12 +10,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {
-            "name": "API Support"
-        },
-        "license": {
-            "name": "MIT"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -77,13 +72,46 @@ const docTemplate = `{
                 "summary": "Add a article",
                 "parameters": [
                     {
-                        "description": "Article",
-                        "name": "article",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/blogArticle.Article"
-                        }
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "tag_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "标题",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "desc",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "内容",
+                        "name": "content",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "创建人",
+                        "name": "created_by",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -142,13 +170,25 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "文章",
-                        "name": "article",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/blogArticle.Article"
-                        }
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "tag_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "标题",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "desc",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -376,110 +416,17 @@ const docTemplate = `{
                 }
             }
         }
-    },
-    "definitions": {
-        "blogArticle.Article": {
-            "type": "object",
-            "required": [
-                "created_on",
-                "id",
-                "modified_on"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "created_by": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "created_on": {
-                    "description": "v0.2.2 前写错了类型",
-                    "type": "string"
-                },
-                "deleted_on": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "desc": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "modified_by": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "modified_on": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
-                },
-                "tag": {
-                    "$ref": "#/definitions/blogTag.Tag"
-                },
-                "tag_id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                }
-            }
-        },
-        "blogTag.Tag": {
-            "type": "object",
-            "properties": {
-                "created_by": {
-                    "type": "string"
-                },
-                "created_on": {
-                    "description": "数据库时间改为varchar了",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "modified_by": {
-                    "type": "string"
-                },
-                "modified_on": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "integer"
-                }
-            }
-        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8088",
+	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "gin-gorm-practice",
-	Description:      "gin-gorm-practice",
+	Title:            "Gin Gorm API",
+	Description:      "This is a sample server celler server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

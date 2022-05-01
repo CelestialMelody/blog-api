@@ -1,17 +1,11 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "gin-gorm-practice",
-        "title": "gin-gorm-practice",
-        "contact": {
-            "name": "API Support"
-        },
-        "license": {
-            "name": "MIT"
-        },
+        "description": "This is a sample server celler server.",
+        "title": "Gin Gorm API",
+        "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8088",
     "basePath": "/api/v1",
     "paths": {
         "/api/v1/articles": {
@@ -70,13 +64,46 @@
                 "summary": "Add a article",
                 "parameters": [
                     {
-                        "description": "Article",
-                        "name": "article",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/blogArticle.Article"
-                        }
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "tag_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "标题",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "desc",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "内容",
+                        "name": "content",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "创建人",
+                        "name": "created_by",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -135,13 +162,25 @@
                         "required": true
                     },
                     {
-                        "description": "文章",
-                        "name": "article",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/blogArticle.Article"
-                        }
+                        "type": "integer",
+                        "description": "标签ID",
+                        "name": "tag_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "标题",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "desc",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -366,99 +405,6 @@
                             "type": "string"
                         }
                     }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "blogArticle.Article": {
-            "type": "object",
-            "required": [
-                "created_on",
-                "id",
-                "modified_on"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "created_by": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "created_on": {
-                    "description": "v0.2.2 前写错了类型",
-                    "type": "string"
-                },
-                "deleted_on": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "desc": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "modified_by": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                },
-                "modified_on": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1
-                    ]
-                },
-                "tag": {
-                    "$ref": "#/definitions/blogTag.Tag"
-                },
-                "tag_id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "title": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                }
-            }
-        },
-        "blogTag.Tag": {
-            "type": "object",
-            "properties": {
-                "created_by": {
-                    "type": "string"
-                },
-                "created_on": {
-                    "description": "数据库时间改为varchar了",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "modified_by": {
-                    "type": "string"
-                },
-                "modified_on": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "integer"
                 }
             }
         }

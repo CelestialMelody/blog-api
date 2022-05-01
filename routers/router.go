@@ -1,7 +1,7 @@
 package routers
 
 import (
-	_ "gin-gorm-practice/docs" // 不要忘了导入把你上一步生成的docs
+	//_ "gin-gorm-practice/docs" // 不要忘了导入把你上一步生成的docs
 	"gin-gorm-practice/middleware/jwt"
 	"gin-gorm-practice/routers/api"
 	v1 "gin-gorm-practice/routers/api/v1"
@@ -25,6 +25,8 @@ func InitRouter() *gin.Engine {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// JWT 验证
 	router.GET("/auth", api.GetAuth)
+
+	router.POST("/upload", api.UploadImage)
 
 	apiV1 := router.Group("/api/v1")
 	// 接入中间件

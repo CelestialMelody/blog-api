@@ -130,7 +130,12 @@ func GetArticles(c *gin.Context) {
 // @Description 添加文章
 // @Tags 文章
 // @Produce json
-// @Param article body blogArticle.Article true "Article"
+// @Param tag_id query int true "标签ID"
+// @Param title query string true "标题"
+// @Param desc query string true "描述"
+// @Param content query string true "内容"
+// @Param created_by query string true "创建人"
+// @Param state query int true "状态"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles [post]
 func AddArticle(c *gin.Context) {
@@ -202,7 +207,9 @@ func AddArticle(c *gin.Context) {
 // @Tags 文章
 // @Produce json
 // @Param id path int true "ID"
-// @Param article body blogArticle.Article true "文章"
+// @Param tag_id query int true "标签ID"
+// @Param title query string true "标题"
+// @Param desc query string true "描述"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles/{id} [put]
 func EditArticle(c *gin.Context) {
