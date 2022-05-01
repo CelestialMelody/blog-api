@@ -1,7 +1,6 @@
 package setting
 
 import (
-	"fmt"
 	"go.uber.org/zap"
 	"gopkg.in/ini.v1"
 	"time"
@@ -62,7 +61,7 @@ func SetUp() {
 	//  5 MB check SetUp -> 1024 * 1024-> app.ini
 	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 
-	fmt.Println(AppSetting.ImageAllowExt) // v0.5.3 [] 没有成功获取;
+	//fmt.Println(AppSetting.ImageAllowExt) // v0.5.3 [] 没有成功获取; v0.5.4 [] 成功获取 app.ini的字段必须与结构体字段一致
 
 	if err = Cfg.Section("server").MapTo(ServerSetting); err != nil {
 		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
