@@ -141,12 +141,13 @@ func GetArticles(c *gin.Context) {
 func AddArticle(c *gin.Context) {
 	// 获取参数
 	type needValid struct {
-		tagId     int    `validate:"min=1"`
-		title     string `validate:"min=1,max=100"`
-		desc      string `validate:"min=1,max=255"`
-		content   string `validate:"min=1,max=65535"`
-		createdBy string `validate:"min=1,max=100"`
-		state     int    `validate:"oneof=0 1"`
+		tagId         int    `validate:"min=1"`
+		title         string `validate:"min=1,max=100"`
+		desc          string `validate:"min=1,max=255"`
+		content       string `validate:"min=1,max=65535"`
+		createdBy     string `validate:"min=1,max=100"`
+		state         int    `validate:"oneof=0 1"`
+		coverImageUrl string `validate:"min=1,max=255"`
 	}
 
 	need := needValid{
@@ -164,6 +165,7 @@ func AddArticle(c *gin.Context) {
 	need.content = c.Query("content")
 	need.createdBy = c.Query("created_by")
 	need.state = com.StrTo(c.Query("state")).MustInt()
+	need.coverImageUrl = c.Query("cover_image_url")
 
 	// 验证参数
 	valid := validator.New() // 使用 playground validator 包生成的验证器
@@ -179,6 +181,8 @@ func AddArticle(c *gin.Context) {
 			data["content"] = need.content
 			data["created_by"] = need.createdBy
 			data["state"] = need.state
+			data["cover_image_url"] = need.coverImageUrl
+
 			if err := blogArticle.AddArticle(data); err == nil {
 				code = e.SUCCESS
 			} else {
@@ -215,23 +219,25 @@ func AddArticle(c *gin.Context) {
 func EditArticle(c *gin.Context) {
 	// 获取参数
 	type needValid struct {
-		id         int    `validate:"min=1"`
-		tagID      int    `validate:"min=1"`
-		title      string `validate:"min=1,max=100"`
-		desc       string `validate:"min=1,max=255"`
-		content    string `validate:"min=1,max=65535"`
-		modifiedBy string `validate:"min=1,max=100"`
-		state      int    `validate:"oneof=0 1"`
+		id            int    `validate:"min=1"`
+		tagID         int    `validate:"min=1"`
+		title         string `validate:"min=1,max=100"`
+		desc          string `validate:"min=1,max=255"`
+		content       string `validate:"min=1,max=65535"`
+		modifiedBy    string `validate:"min=1,max=100"`
+		state         int    `validate:"oneof=0 1"`
+		coverImageUrl string `validate:"min=1,max=255"`
 	}
 
 	need := needValid{
-		id:         -1,
-		tagID:      -1,
-		title:      "",
-		desc:       "",
-		content:    "",
-		modifiedBy: "",
-		state:      -1,
+		id:            -1,
+		tagID:         -1,
+		title:         "",
+		desc:          "",
+		content:       "",
+		modifiedBy:    "",
+		state:         -1,
+		coverImageUrl: "",
 	}
 
 	need.id = com.StrTo(c.Param("id")).MustInt()
@@ -240,6 +246,7 @@ func EditArticle(c *gin.Context) {
 	need.desc = c.Query("content")
 	need.modifiedBy = c.Query("modified_by")
 	need.state = com.StrTo(c.Query("state")).MustInt()
+	need.coverImageUrl = c.Query("cover_image_url")
 
 	logger := zap.NewExample()
 	valid := validator.New()
@@ -255,7 +262,7 @@ func EditArticle(c *gin.Context) {
 				data["content"] = need.content
 				data["modified_by"] = need.modifiedBy
 				data["state"] = need.state
-
+				data["cover_image_url"] = need.coverImageUrl
 				blogArticle.EditArticle(need.id, data)
 				code = e.SUCCESS
 			} else {
