@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gin-gorm-practice/models"
 	"gin-gorm-practice/models/blogTag"
+	"gin-gorm-practice/pkg/logging"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"time"
@@ -32,6 +33,9 @@ type Article struct {
 
 func init() {
 	instanceDB = models.InitDB()
+	if err := instanceDB.MysqlDB.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&Article{}); err != nil {
+		logging.LoggoZap.Error(fmt.Sprintf("MysqlDB.AutoMigrate error: %v", err))
+	}
 }
 
 // BeforeCreate 建议抽象为接口

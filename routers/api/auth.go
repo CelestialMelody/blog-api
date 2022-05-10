@@ -21,7 +21,7 @@ var (
 // GetAuth 获取用户信息
 // @Summary 获取用户信息
 // @Description 获取用户信息
-// @Tags auth
+// @Tags Auth
 // @Accept json
 // @Produce json
 // @Param username query string true "用户名"

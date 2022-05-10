@@ -32,6 +32,8 @@ func InitRouter() *gin.Engine {
 
 	router.POST("/upload", api.UploadImage)
 
+	router.POST("/uploadImages", api.UploadImages)
+
 	apiV1 := router.Group("/api/v1")
 	// 接入中间件
 	apiV1.Use(jwt.JWT())
