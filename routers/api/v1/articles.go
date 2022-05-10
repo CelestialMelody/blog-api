@@ -4,10 +4,10 @@ import (
 	"gin-gorm-practice/conf/setting"
 	"gin-gorm-practice/models/blogArticle"
 	"gin-gorm-practice/models/blogTag"
+	"gin-gorm-practice/pkg/app"
 	"gin-gorm-practice/pkg/e"
 	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
-	"github.com/beego/beego/v2/core/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/unknwon/com"
@@ -24,39 +24,23 @@ import (
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles/{id} [get]
 func GetArticle(c *gin.Context) {
-	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
+	appG := app.Gin{C: c}
+	valid := validator.New() // 使用 playground validator 包生成的验证器
 
-	logger := zap.NewExample() // logger 和 valid 可以放在init函数中
-
-	// 验证参数
-	valid := validation.Validation{}
-	valid.Min(id, 1, "id").Message("ID必须大于0")
-
-	code := e.INVALID_PARAMS
-	var data interface{}
-
-	if !valid.HasErrors() {
-		if err := blogArticle.ExistArticleByID(id); err != nil {
-			data = blogArticle.GetArticle(id)
-			code = e.SUCCESS
-		} else {
-			code = e.ERROR_NOT_EXIST_ARTICLE
-		}
-	} else {
-		for _, err := range valid.Errors {
-			logger.Info(err.Key, zap.String("message", err.Message))
-			//logger.Error(err.Key, zap.String("message", err.Message))
-			logging.LoggoZap.Error(err.Key, zap.String("message", err.Message))
-		}
+	if err := valid.Var(id, "required,min=1"); err != nil {
+		app.MarKError(err)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(200, gin.H{
-		"code":        code,
-		"msg":         e.GetMsg(code),
-		"data":        data,
-		"article_msg": "get an article",
-	})
+	if err := blogArticle.ExistArticleByID(id); err != nil {
+		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
+	}
+
+	article := blogArticle.GetArticle(id)
+
+	appG.Response(http.StatusOK, e.SUCCESS, article)
 }
 
 // GetArticles

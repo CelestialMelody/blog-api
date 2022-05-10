@@ -234,6 +234,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "GetTags",
                 "parameters": [
                     {
@@ -275,6 +278,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "AddTags",
                 "parameters": [
                     {
@@ -313,6 +319,9 @@ const docTemplate = `{
                 "description": "Edit multiple article tags",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "标签"
                 ],
                 "summary": "EditTags",
                 "parameters": [
@@ -357,6 +366,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "DeleteTags",
                 "parameters": [
                     {
@@ -387,7 +399,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "获取用户信息",
                 "parameters": [
@@ -415,6 +427,62 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/upload": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "图片上传"
+                ],
+                "summary": "Upload image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"message\":\"ok\",\"data\":{}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/upload/file": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件上传"
+                ],
+                "summary": "Upload file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"message\":\"ok\",\"data\":{}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`
@@ -423,7 +491,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Gin Gorm API",
 	Description:      "This is a sample server celler server.",

@@ -6,7 +6,6 @@
         "contact": {},
         "version": "1.0"
     },
-    "basePath": "/api/v1",
     "paths": {
         "/api/v1/articles": {
             "get": {
@@ -226,6 +225,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "GetTags",
                 "parameters": [
                     {
@@ -267,6 +269,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "AddTags",
                 "parameters": [
                     {
@@ -305,6 +310,9 @@
                 "description": "Edit multiple article tags",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "标签"
                 ],
                 "summary": "EditTags",
                 "parameters": [
@@ -349,6 +357,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "DeleteTags",
                 "parameters": [
                     {
@@ -379,7 +390,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "获取用户信息",
                 "parameters": [
@@ -401,6 +412,62 @@
                 "responses": {
                     "200": {
                         "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "图片上传"
+                ],
+                "summary": "Upload image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"message\":\"ok\",\"data\":{}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/upload/file": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件上传"
+                ],
+                "summary": "Upload file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"message\":\"ok\",\"data\":{}}",
                         "schema": {
                             "type": "string"
                         }

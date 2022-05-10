@@ -16,6 +16,7 @@ import (
 // GetTags - 获取多个文章标签 GET
 // @Summary GetTags
 // @Produce json
+// @Tags 标签
 // @Description Get multiple article tags
 // @Param name query string false "标签名称"
 // @Param state query int false "状态"
@@ -55,6 +56,7 @@ func GetTags(c *gin.Context) {
 
 // AddTags - 添加多个文章标签 POST
 // @Summary AddTags
+// @Tags 标签
 // @Description Add multiple article tags
 // @Produce json
 // @Param name query string true "标签名称"
@@ -112,6 +114,7 @@ func AddTags(c *gin.Context) {
 
 // EditTags - 编辑多个文章标签 PUT update
 // @Summary EditTags
+// @Tags 标签
 // @Description Edit multiple article tags
 // @Produce json
 // @Param id path int true "ID"
@@ -180,6 +183,7 @@ func EditTags(c *gin.Context) {
 
 // DeleteTags - 删除多个文章标签
 // @Summary DeleteTags
+// @Tags 标签
 // @Produce json
 // @Param id path int true "ID"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"

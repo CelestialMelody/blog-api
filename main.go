@@ -7,6 +7,7 @@ import (
 	_ "gin-gorm-practice/docs" // dont forget
 	"gin-gorm-practice/models"
 	"gin-gorm-practice/pkg/logging"
+	"gin-gorm-practice/pkg/redis"
 	"gin-gorm-practice/routers"
 	"go.uber.org/zap"
 	"net/http"
@@ -22,6 +23,10 @@ func main() {
 	setting.SetUp()
 	models.SetUp()
 	logging.SetUp()
+	err := redis.Init()
+	if err != nil {
+		return
+	}
 	router := routers.InitRouter()
 
 	server := &http.Server{

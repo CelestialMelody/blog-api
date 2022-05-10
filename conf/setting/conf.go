@@ -46,16 +46,26 @@ type Database struct {
 
 var DatabaseSetting = &Database{}
 
-var logger = zap.NewExample().Sugar()
+type Redis struct {
+	Host        string
+	Password    string
+	MaxIdle     int
+	MaxActive   int
+	IdleTimeout time.Duration
+}
+
+var RedisSetting = &Redis{}
+
+var Logger = zap.NewExample().Sugar()
 
 func SetUp() {
 	Cfg, err := ini.Load("conf/app.ini")
 	if err != nil {
-		logger.Panic("Fail to parse 'conf/app.ini': %v", zap.Any("err", err))
+		Logger.Panic("Fail to parse 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	if err = Cfg.Section("app").MapTo(AppSetting); err != nil {
-		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+		Logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	//  5 MB check SetUp -> 1024 * 1024-> app.ini
@@ -64,17 +74,21 @@ func SetUp() {
 	//fmt.Println(AppSetting.ImageAllowExt) // v0.5.3 [] 没有成功获取; v0.5.4 [] 成功获取 app.ini的字段必须与结构体字段一致
 
 	if err = Cfg.Section("server").MapTo(ServerSetting); err != nil {
-		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+		Logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	if err = Cfg.Section("mysql").MapTo(DatabaseSetting); err != nil {
-		logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+		Logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
+	}
+
+	if err = Cfg.Section("redis").MapTo(RedisSetting); err != nil {
+		Logger.Panic("Fail to map 'conf/app.ini': %v", zap.Any("err", err))
 	}
 
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 
-	logger.Info("init conf success")
+	Logger.Info("init conf success")
 }
 
 //var (

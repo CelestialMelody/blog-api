@@ -12,4 +12,8 @@ db:
 
 app:
   page_size: 10
-  jwt_secret: "123456"
+  jwt_secret: 123456
+
+
+redis:
+  Host: 127.0.0.1:6379
