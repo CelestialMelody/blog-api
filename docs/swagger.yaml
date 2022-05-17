@@ -1,9 +1,39 @@
 info:
   contact: {}
-  description: This is a sample server celler server.
-  title: Gin Gorm API
+  description: An example of gin
+  license:
+    name: MIT
+    url: https://github.com/CelestialMelody/gin-gorm-practice/blob/main/LICENSE
+  termsOfService: https://github.com/CelestialMelody/gin-gorm-practice
+  title: Golang Gin API
   version: "1.0"
 paths:
+  /api/register:
+    post:
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Password
+        in: query
+        name: password
+        required: true
+        type: string
+      - description: Email
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 用户注册
   /api/v1/articles:
     get:
       description: 获取多篇文章
@@ -74,7 +104,7 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Add a article
+      summary: Add a blogArticle
       tags:
       - 文章
   /api/v1/articles/{id}:
@@ -93,7 +123,7 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Delete a article
+      summary: Delete a blogArticle
       tags:
       - 文章
     get:
@@ -111,7 +141,7 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Get a single article
+      summary: Get a single blogArticle
       tags:
       - 文章
     put:
@@ -144,12 +174,12 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Update a article
+      summary: Update a blogArticle
       tags:
       - 文章
   /api/v1/tags:
     get:
-      description: Get multiple article tags
+      description: Get multiple blogArticle tags
       parameters:
       - description: 标签名称
         in: query
@@ -174,11 +204,11 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: GetTags
+      summary: GetTagLists
       tags:
       - 标签
     post:
-      description: Add multiple article tags
+      description: Add multiple blogArticle tags
       parameters:
       - description: 标签名称
         in: query
@@ -223,7 +253,7 @@ paths:
       tags:
       - 标签
     put:
-      description: Edit multiple article tags
+      description: Edit multiple blogArticle tags
       parameters:
       - description: ID
         in: path
@@ -254,7 +284,7 @@ paths:
       summary: EditTags
       tags:
       - 标签
-  /auth:
+  /blogAuth:
     get:
       consumes:
       - application/json

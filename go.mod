@@ -14,6 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.10.1
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/sirupsen/logrus v1.8.1

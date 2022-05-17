@@ -1,16 +1,72 @@
 package e
 
+const (
+	SUCCESS        = 200
+	ERROR          = 500
+	INVALID_PARAMS = 400
+
+	ERROR_EXIST_TAG       = 1001
+	ERROR_ADD_TAG         = 1002
+	ERROR_NOT_EXIST_TAG   = 1003
+	ERROR_GET_TAGS_FAIL   = 1004
+	ERROR_COUNT_TAG_FAIL  = 1005
+	ERROR_ADD_TAG_FAIL    = 1006
+	ERROR_EDIT_TAG_FAIL   = 1007
+	ERROR_DELETE_TAG_FAIL = 1008
+
+	ERROR_NOT_EXIST_ARTICLE      = 2001
+	ERROR_GET_ARTICLE_FAIL       = 2002
+	ERROR_GET_ARTICLE_LIST_FAIL  = 2003
+	ERROR_GET_ARTICLE_COUNT_FAIL = 2004
+	ERROR_ADD_ARTICLE_FAIL       = 2005
+	ERROR_EDIT_ARTICLE_FAIL      = 2006
+	ERROR_DELETE_ARTICLE_FAIL    = 2007
+
+	ERROR_AUTH_CHECK_TOKEN_FAIL    = 3001
+	ERROR_AUTH_CHECK_TOKEN_TIMEOUT = 3002
+	ERROR_AUTH_TOKEN               = 3003
+	ERROR_REGIEST_FAIL             = 3004
+
+	ERROR_UPLOAD_IMAGE_FAIL         = 4001
+	ERROR_UPLOAD_CHECK_IMAGE_FAIL   = 4003
+	ERROR_UPLOAD_CHECK_IMAGE_FORMAT = 4004
+	ERROR_UPLOAD_CHECK_IMAGE_SIZE   = 4005
+
+	ERROR_NOT_EXIST_USER = 5001
+)
+
 var MsgFlags = map[int]string{
-	SUCCESS:                        "OK",
-	ERROR:                          "FAIL",
-	INVALID_PARAMS:                 "请求参数错误",
-	ERROR_EXIST_TAG:                "已存在该标签名称",
-	ERROR_NOT_EXIST_TAG:            "该标签不存在",
-	ERROR_NOT_EXIST_ARTICLE:        "该文章不存在",
+	SUCCESS:        "OK",
+	ERROR:          "FAIL",
+	INVALID_PARAMS: "请求参数错误",
+
+	ERROR_EXIST_TAG:       "已存在该标签名称",
+	ERROR_NOT_EXIST_TAG:   "该标签不存在",
+	ERROR_ADD_TAG:         "新增标签失败",
+	ERROR_GET_TAGS_FAIL:   "获取多个标签失败",
+	ERROR_COUNT_TAG_FAIL:  "统计标签失败",
+	ERROR_ADD_TAG_FAIL:    "新增标签失败",
+	ERROR_EDIT_TAG_FAIL:   "编辑标签失败",
+	ERROR_DELETE_TAG_FAIL: "删除标签失败",
+
+	ERROR_NOT_EXIST_ARTICLE:      "该文章不存在",
+	ERROR_GET_ARTICLE_FAIL:       "获取文章失败",
+	ERROR_GET_ARTICLE_LIST_FAIL:  "获取文章列表失败",
+	ERROR_GET_ARTICLE_COUNT_FAIL: "获取文章总数失败",
+	ERROR_ADD_ARTICLE_FAIL:       "新增文章失败",
+	ERROR_EDIT_ARTICLE_FAIL:      "编辑文章失败",
+	ERROR_DELETE_ARTICLE_FAIL:    "删除文章失败",
+
 	ERROR_AUTH_CHECK_TOKEN_FAIL:    "Token鉴权失败",
 	ERROR_AUTH_CHECK_TOKEN_TIMEOUT: "Token已超时",
 	ERROR_AUTH_TOKEN:               "Token生成失败",
-	ERROR_AUTH:                     "Token错误",
+	ERROR_NOT_EXIST_USER:           "该用户不存在",
+	ERROR_REGIEST_FAIL:             "注册失败",
+
+	ERROR_UPLOAD_IMAGE_FAIL:         "上传图片失败",
+	ERROR_UPLOAD_CHECK_IMAGE_FAIL:   "检查图片失败",
+	ERROR_UPLOAD_CHECK_IMAGE_FORMAT: "校验图片格式失败",
+	ERROR_UPLOAD_CHECK_IMAGE_SIZE:   "校验图片大小失败",
 }
 
 func GetMsg(code int) string {

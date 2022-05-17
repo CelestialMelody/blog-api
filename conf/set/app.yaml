@@ -1,0 +1,40 @@
+app:
+  port: 8088
+  host: localhost
+  jwtSecret: hdu20011717
+  runtimeRootPath: runtime/
+  pageSize: 10
+  readTimeout: 60
+  writeTimeout: 60
+  maxHeaderBytes: 1
+  release: false
+  runMode: debug
+
+db:
+  mysql:
+    address: 127.0.0.1:3306
+    user: blogAdmin
+    password: 20011717
+    database: blog
+    maxIdle: 20
+    maxOpen: 20
+    maxLifetime: 100
+    tablePrefix: blog_
+  redis:
+    host: 127.0.0.1:6379
+    password:
+    maxIdle: 20
+    maxActive: 20
+    idleTimeOut: 100
+
+image:
+  imagePrefixUrl: http://localhost:8088
+  imageSavePath: upload/images
+  imageMaxSize: 5
+  imageAllowExt: ["jpg", "jpeg", "png", "gif"]
+
+log:
+  logSavePath: logs
+  logSaveName: app.log
+  logFileExt: log
+  timeFormat: 2006-01-02 - 15:04:05.000
