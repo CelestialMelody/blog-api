@@ -1,22 +1,21 @@
 package v1
 
 import (
-	"gin-gorm-practice/conf/setting"
+	"gin-gorm-practice/conf"
 	"gin-gorm-practice/models/blogArticle"
-	"gin-gorm-practice/models/blogTag"
+	"gin-gorm-practice/pkg/app"
 	"gin-gorm-practice/pkg/e"
-	"gin-gorm-practice/pkg/logging"
 	"gin-gorm-practice/pkg/util"
-	"github.com/beego/beego/v2/core/validation"
+	"gin-gorm-practice/pkg/validate"
+	"gin-gorm-practice/service/articleS"
+	"gin-gorm-practice/service/tagS"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/unknwon/com"
-	"go.uber.org/zap"
 	"net/http"
 )
 
 // GetArticle
-// @Summary Get a single article
+// @Summary Get a single blogArticle
 // @Description 获取文章
 // @Tags 文章
 // @Produce json
@@ -24,42 +23,31 @@ import (
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles/{id} [get]
 func GetArticle(c *gin.Context) {
-	// 获取参数
 	id := com.StrTo(c.Param("id")).MustInt()
+	appG := app.Gin{C: c}
 
-	logger := zap.NewExample() // logger 和 valid 可以放在init函数中
-
-	// 验证参数
-	valid := validation.Validation{}
-	valid.Min(id, 1, "id").Message("ID必须大于0")
-
-	code := e.INVALID_PARAMS
-	var data interface{}
-
-	if !valid.HasErrors() {
-		if err := blogArticle.ExistArticleByID(id); err != nil {
-			data = blogArticle.GetArticle(id)
-			code = e.SUCCESS
-		} else {
-			code = e.ERROR_NOT_EXIST_ARTICLE
-		}
-	} else {
-		for _, err := range valid.Errors {
-			logger.Info(err.Key, zap.String("message", err.Message))
-			//logger.Error(err.Key, zap.String("message", err.Message))
-			logging.LoggoZap.Error(err.Key, zap.String("message", err.Message))
-		}
+	if err := validate.Var(id, "required,min=1"); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(200, gin.H{
-		"code":        code,
-		"msg":         e.GetMsg(code),
-		"data":        data,
-		"article_msg": "get an article",
-	})
+	if err := blogArticle.ExistArticleByID(id); err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_NOT_EXIST_ARTICLE, nil)
+	}
+
+	articleService := articleS.Article{ID: id}
+	article, err := articleService.Get()
+	if err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_GET_ARTICLE_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, article)
 }
 
-// GetArticles
+// GetArticleLists
 // @Summary Get multiple articles
 // @Description 获取多篇文章
 // @Tags 文章
@@ -70,63 +58,54 @@ func GetArticle(c *gin.Context) {
 // @Param page_size query int false "每页数量"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles [get]
-func GetArticles(c *gin.Context) {
-	// 获取参数
-	data := make(map[string]interface{})
-	maps := make(map[string]interface{})
-	valid := validator.New() // 使用 playground validator 包生成的验证器
-	logger := zap.NewExample()
-
+func GetArticleLists(c *gin.Context) {
 	// 验证参数
 	type needValid struct {
 		state int `validate:"oneof=0 1"`
 		tagId int `validate:"min=1"`
 	}
-	//var need needValid
-	//need.state = -1
-	//need.tagId = -1
+	var need needValid
+	appG := app.Gin{C: c}
 
-	need := &needValid{
-		state: -1,
-		tagId: -1,
+	need.state = com.StrTo(c.Query("state")).MustInt()
+	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
+
+	if err := validate.Struct(need); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	if arg := c.Query("state"); arg != "" {
-		need.state = com.StrTo(arg).MustInt()
-		maps["state"] = need.state
+	articleService := articleS.Article{
+		TagID:    need.tagId,
+		State:    need.state,
+		PageNum:  util.GetPage(c),
+		PageSize: conf.AppSetting.PageSize,
 	}
 
-	if arg := c.Query("tag_id"); arg != "" {
-		need.tagId = com.StrTo(arg).MustInt() // MustUint() ?
-		maps["tag_id"] = need.tagId
+	articleLists, err := articleService.GetAll()
+	if err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_GET_ARTICLE_LIST_FAIL, nil)
+		return
 	}
 
-	code := e.INVALID_PARAMS
-
-	// v0.4.1 validator貌似没有检验到必填项
-	if err := valid.Struct(need); err == nil {
-		code = e.SUCCESS
-		//data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.PageSize, maps)
-		data["lists"] = blogArticle.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
-		data["total"] = blogArticle.GetArticleTotalCount(maps)
-	} else {
-		code = e.ERROR_NOT_EXIST_ARTICLE
-		logger.Info("validate error", zap.Any("error", err))
-		logger.Info("validate error(string)", zap.String("error", err.Error()))
+	total, err := articleService.Count()
+	if err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_GET_ARTICLE_COUNT_FAIL, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":        code,
-		"msg":         e.GetMsg(code),
-		"data":        data,
-		"article_msg": "get articles",
-	})
-	// 没看到返回结果 只能手动加了
-	logger.Info("GetArticles", zap.Any("data", data))
+	data := make(map[string]interface{})
+	data["lists"] = articleLists
+	data["total"] = total
+
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 // AddArticle
-// @Summary Add a article
+// @Summary Add a blogArticle
 // @Description 添加文章
 // @Tags 文章
 // @Produce json
@@ -150,16 +129,10 @@ func AddArticle(c *gin.Context) {
 		coverImageUrl string `validate:"min=1,max=255"`
 	}
 
-	need := needValid{
-		tagId:     0, //
-		title:     "",
-		desc:      "",
-		content:   "",
-		createdBy: "",
-		state:     -1,
-	}
+	var need needValid
+	appG := app.Gin{C: c}
 
-	need.tagId = com.StrTo(c.Query("tag_id")).MustInt() // 现在不考虑uint了// v0.3.1 uint -> 否则导致接口断言失败->AddArticle: TagID: data[ "tag_id"].(uint)
+	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
 	need.title = c.Query("title")
 	need.desc = c.Query("desc")
 	need.content = c.Query("content")
@@ -167,46 +140,40 @@ func AddArticle(c *gin.Context) {
 	need.state = com.StrTo(c.Query("state")).MustInt()
 	need.coverImageUrl = c.Query("cover_image_url")
 
-	// 验证参数
-	valid := validator.New() // 使用 playground validator 包生成的验证器
-	logger := zap.NewExample()
-
-	code := e.INVALID_PARAMS
-	if err := valid.Struct(need); err == nil {
-		if blogTag.ExistTagByID(need.tagId) {
-			data := make(map[string]interface{})
-			data["tag_id"] = need.tagId
-			data["title"] = need.title
-			data["desc"] = need.desc
-			data["content"] = need.content
-			data["created_by"] = need.createdBy
-			data["state"] = need.state
-			data["cover_image_url"] = need.coverImageUrl
-
-			if err := blogArticle.AddArticle(data); err == nil {
-				code = e.SUCCESS
-			} else {
-				logger.Info("err: " + err.Error())
-				logging.LoggoZap.Info("err: " + err.Error())
-			}
-		} else {
-			code = e.ERROR_NOT_EXIST_TAG
-		}
-	} else {
-		logger.Info("err: " + err.Error())
-		logging.LoggoZap.Info("validate error", zap.Any("error", err))
+	if err := validate.Struct(need); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":        code,
-		"msg":         e.GetMsg(code),
-		"data":        make(map[string]interface{}),
-		"article_msg": "add an article",
-	})
+	tagService := tagS.Tag{ID: need.tagId}
+	if err := tagService.ExistByID(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_NOT_EXIST_TAG, nil)
+		return
+	}
+
+	articleService := articleS.Article{
+		TagID:         need.tagId,
+		Title:         need.title,
+		Desc:          need.desc,
+		Content:       need.content,
+		CoverImageUrl: need.coverImageUrl,
+		CreatedBy:     need.createdBy,
+		State:         need.state,
+	}
+
+	if err := articleService.Add(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_ARTICLE_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
 
 // EditArticle
-// @Summary Update a article
+// @Summary Update a blogArticle
 // @Description 更新文章
 // @Tags 文章
 // @Produce json
@@ -229,16 +196,7 @@ func EditArticle(c *gin.Context) {
 		coverImageUrl string `validate:"min=1,max=255"`
 	}
 
-	need := needValid{
-		id:            -1,
-		tagID:         -1,
-		title:         "",
-		desc:          "",
-		content:       "",
-		modifiedBy:    "",
-		state:         -1,
-		coverImageUrl: "",
-	}
+	var need needValid
 
 	need.id = com.StrTo(c.Param("id")).MustInt()
 	need.tagID = com.StrTo(c.Query("tag_id")).MustInt()
@@ -248,46 +206,49 @@ func EditArticle(c *gin.Context) {
 	need.state = com.StrTo(c.Query("state")).MustInt()
 	need.coverImageUrl = c.Query("cover_image_url")
 
-	logger := zap.NewExample()
-	valid := validator.New()
-	code := e.INVALID_PARAMS
+	appG := app.Gin{C: c}
 
-	if err := valid.Struct(need); err == nil {
-		if err := blogArticle.ExistArticleByID(need.id); err == nil {
-			if blogTag.ExistTagByID(need.tagID) {
-				data := make(map[string]interface{})
-				data["tag_id"] = need.tagID
-				data["title"] = need.title
-				data["desc"] = need.desc
-				data["content"] = need.content
-				data["modified_by"] = need.modifiedBy
-				data["state"] = need.state
-				data["cover_image_url"] = need.coverImageUrl
-				blogArticle.EditArticle(need.id, data)
-				code = e.SUCCESS
-			} else {
-				code = e.ERROR_NOT_EXIST_TAG
-			}
-		} else {
-			code = e.ERROR_NOT_EXIST_ARTICLE
-			logger.Debug("err: " + err.Error())
-			logging.LoggoZap.Debug("err: " + err.Error())
-		}
-	} else {
-		logger.Debug("err: " + err.Error())
-		logging.LoggoZap.Debug("validate error", zap.Any("error", err))
+	if err := validate.Struct(need); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":        code,
-		"msg":         e.GetMsg(code),
-		"data":        make(map[string]interface{}),
-		"article_msg": "edit an article",
-	})
+	articleService := articleS.Article{
+		ID:            need.id,
+		TagID:         need.tagID,
+		Title:         need.title,
+		Desc:          need.desc,
+		Content:       need.content,
+		CoverImageUrl: need.coverImageUrl,
+		ModifiedBy:    need.modifiedBy,
+		State:         need.state,
+	}
+
+	if err := articleService.ExistByID(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_NOT_EXIST_ARTICLE, nil)
+		return
+	}
+
+	tagService := tagS.Tag{ID: need.tagID}
+	if err := tagService.ExistByID(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_NOT_EXIST_TAG, nil)
+		return
+	}
+
+	if err := articleService.Edit(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_EDIT_ARTICLE_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }
 
 // DeleteArticle
-// @Summary Delete a article
+// @Summary Delete a blogArticle
 // @Description 删除文章
 // @Tags 文章
 // @Accept json
@@ -296,30 +257,26 @@ func EditArticle(c *gin.Context) {
 // @Router /api/v1/articles/{id} [delete]
 func DeleteArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
+	appG := app.Gin{C: c}
 
-	logger := zap.NewExample()
-	valid := validator.New()
-
-	code := e.INVALID_PARAMS
-
-	if err := valid.Var(id, "min=1"); err == nil {
-		if err := blogArticle.ExistArticleByID(id); err == nil {
-			blogArticle.DeleteArticle(id)
-			code = e.SUCCESS
-		} else {
-			code = e.ERROR_NOT_EXIST_ARTICLE
-			logger.Info("err" + err.Error())
-			logging.LoggoZap.Info("err" + err.Error())
-		}
-	} else {
-		logger.Info("err" + err.Error())
-		logging.LoggoZap.Info("validate error", zap.Any("error", err))
+	if err := validate.Var(id, "min=1"); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":        code,
-		"msg":         e.GetMsg(code),
-		"data":        make(map[string]interface{}),
-		"article_msg": "delete an article",
-	})
+	articleService := articleS.Article{ID: id}
+	if err := articleService.ExistByID(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_NOT_EXIST_ARTICLE, nil)
+		return
+	}
+
+	if err := articleService.Delete(); err != nil {
+		app.MarkError(err)
+		appG.Response(http.StatusInternalServerError, e.ERROR_DELETE_ARTICLE_FAIL, nil)
+		return
+	}
+
+	appG.Response(http.StatusOK, e.SUCCESS, nil)
 }

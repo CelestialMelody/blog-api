@@ -3,10 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"gin-gorm-practice/conf/setting"
+	"gin-gorm-practice/conf"
 	_ "gin-gorm-practice/docs" // dont forget
-	"gin-gorm-practice/models"
-	"gin-gorm-practice/pkg/logging"
+	"gin-gorm-practice/models/blogArticle"
+	"gin-gorm-practice/models/blogAuth"
+	"gin-gorm-practice/models/blogTag"
+	"gin-gorm-practice/pkg/log"
+	"gin-gorm-practice/pkg/mysql"
+	"gin-gorm-practice/pkg/redis"
 	"gin-gorm-practice/routers"
 	"go.uber.org/zap"
 	"net/http"
@@ -15,21 +19,37 @@ import (
 	"time"
 )
 
-// @title Gin Gorm API
+// @title Golang Gin API
 // @version 1.0
-// @description This is a sample server celler server.
+// @description An example of gin
+// @termsOfService https://github.com/CelestialMelody/gin-gorm-practice
+// @license.name MIT
+// @license.url https://github.com/CelestialMelody/gin-gorm-practice/blob/main/LICENSE
 func main() {
-	setting.SetUp()
-	models.SetUp()
-	logging.SetUp()
+	var err error
+
+	conf.Init()
+	err = mysql.Init()
+	if err != nil {
+		return
+	}
+	err = redis.Init()
+	if err != nil {
+		return
+	}
 	router := routers.InitRouter()
 
+	log.Init()
+	blogAuth.Init()
+	blogArticle.Init()
+	blogTag.Init()
+
 	server := &http.Server{
-		Addr:           fmt.Sprintf(":%d", setting.ServerSetting.HttpPort),
+		Addr:           fmt.Sprintf(":%s", conf.AppSetting.Port),
 		Handler:        router,
-		ReadTimeout:    time.Duration(setting.ServerSetting.ReadTimeout),
-		WriteTimeout:   time.Duration(setting.ServerSetting.WriteTimeout),
-		MaxHeaderBytes: 1 << 20,
+		ReadTimeout:    conf.AppSetting.ReadTimeout,
+		WriteTimeout:   conf.AppSetting.WriteTimeout,
+		MaxHeaderBytes: conf.AppSetting.MaxHeaderBytes,
 	}
 
 	go func() {
@@ -59,69 +79,8 @@ func main() {
 func exit() {
 	fmt.Println("Start Exit...")
 	fmt.Println("Exit Clean...")
+	//blogTag.ClearAllTag()
+	//blogArticle.CleanAllArticle()
 	fmt.Println("End Exit...")
 	os.Exit(0)
 }
-
-//func main() { // 用不了 应改linux环境可以
-//	// 初始化配置
-//	endless.DefaultReadTimeOut = time.Duration(setting.ReadTimeout)
-//	endless.DefaultWriteTimeOut = time.Duration(setting.WriteTimeout)
-//	endless.DefaultMaxHeaderBytes = 1 << 20 // 1MB
-//	endPoint := fmt.Sprintf(":%d", setting.HTTPPort)
-//
-//	server := endless.NewServer(endPoint, routers.InitRouter())
-//	// 启动服务
-//	server.BeforeBegin = func(add string) {
-//		// 输出当前进程pid
-//		zap.L().Info("Actual pid is :", zap.Int("pid", syscall.Getpid()))
-//	}
-//	err := server.ListenAndServe()
-//	if err != nil {
-//		zap.L().Panic("Server err", zap.Error(err))
-//		return
-//	}
-//}
-
-//func main() {
-//	router := routers.InitRouter()
-//	server := &http.Server{
-//		Addr:           fmt.Sprintf(":%d", setting.HTTPPort),
-//		Handler:        router,
-//		ReadTimeout:    time.Duration(setting.ReadTimeout),
-//		WriteTimeout:   time.Duration(setting.WriteTimeout),
-//		MaxHeaderBytes: 1 << 20,
-//	}
-//	err := server.ListenAndServe()
-//	if err != nil {
-//		zap.L().Panic("Server err", zap.Error(err))
-//		return
-//	}
-//}
-
-//func main() {
-//	router := gin.Default()
-//	router.GET("/test", func(c *gin.Context) {
-//		c.JSON(200, gin.H{
-//			"message": "test",
-//		})
-//	})
-//	// 启动服务 这里居然知道处于debug模式
-//	server := &http.Server{
-//		Addr:           fmt.Sprintf(":%d", setting.HTTPPort),
-//		Handler:        router,
-//		ReadTimeout:    time.Duration(setting.ReadTimeout),
-//		WriteTimeout:   time.Duration(setting.WriteTimeout),
-//		MaxHeaderBytes: 1 << 20,
-//	}
-//	err := server.ListenAndServe()
-//	if err != nil {
-//		logrus.Printf("start server error: %v", err)
-//		return
-//	}
-//	// gin 直接写不知道处于debug模式
-//	//err := router.Run(fmt.Sprintf(":%d", setting.HTTPPort))
-//	//if err != nil {
-//	//	return
-//	//}
-//}

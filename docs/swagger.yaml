@@ -1,10 +1,39 @@
-basePath: /api/v1
 info:
-  contact: { }
-  description: This is a sample server celler server.
-  title: Gin Gorm API
+  contact: {}
+  description: An example of gin
+  license:
+    name: MIT
+    url: https://github.com/CelestialMelody/gin-gorm-practice/blob/main/LICENSE
+  termsOfService: https://github.com/CelestialMelody/gin-gorm-practice
+  title: Golang Gin API
   version: "1.0"
 paths:
+  /api/register:
+    post:
+      parameters:
+      - description: Name
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Password
+        in: query
+        name: password
+        required: true
+        type: string
+      - description: Email
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":200,"data":{},"msg":"ok"}'
+          schema:
+            type: string
+      summary: 用户注册
   /api/v1/articles:
     get:
       description: 获取多篇文章
@@ -38,36 +67,36 @@ paths:
     post:
       description: 添加文章
       parameters:
-        - description: 标签ID
-          in: query
-          name: tag_id
-          required: true
-          type: integer
-        - description: 标题
-          in: query
-          name: title
-          required: true
-          type: string
-        - description: 描述
-          in: query
-          name: desc
-          required: true
-          type: string
-        - description: 内容
-          in: query
-          name: content
-          required: true
-          type: string
-        - description: 创建人
-          in: query
-          name: created_by
-          required: true
-          type: string
-        - description: 状态
-          in: query
-          name: state
-          required: true
-          type: integer
+      - description: 标签ID
+        in: query
+        name: tag_id
+        required: true
+        type: integer
+      - description: 标题
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: 描述
+        in: query
+        name: desc
+        required: true
+        type: string
+      - description: 内容
+        in: query
+        name: content
+        required: true
+        type: string
+      - description: 创建人
+        in: query
+        name: created_by
+        required: true
+        type: string
+      - description: 状态
+        in: query
+        name: state
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -75,7 +104,7 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Add a article
+      summary: Add a blogArticle
       tags:
       - 文章
   /api/v1/articles/{id}:
@@ -94,7 +123,7 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Delete a article
+      summary: Delete a blogArticle
       tags:
       - 文章
     get:
@@ -112,32 +141,32 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Get a single article
+      summary: Get a single blogArticle
       tags:
       - 文章
     put:
       description: 更新文章
       parameters:
-        - description: ID
-          in: path
-          name: id
-          required: true
-          type: integer
-        - description: 标签ID
-          in: query
-          name: tag_id
-          required: true
-          type: integer
-        - description: 标题
-          in: query
-          name: title
-          required: true
-          type: string
-        - description: 描述
-          in: query
-          name: desc
-          required: true
-          type: string
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 标签ID
+        in: query
+        name: tag_id
+        required: true
+        type: integer
+      - description: 标题
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: 描述
+        in: query
+        name: desc
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -145,12 +174,12 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: Update a article
+      summary: Update a blogArticle
       tags:
       - 文章
   /api/v1/tags:
     get:
-      description: Get multiple article tags
+      description: Get multiple blogArticle tags
       parameters:
       - description: 标签名称
         in: query
@@ -175,9 +204,11 @@ paths:
           description: '{"code":200,"data":{},"msg":"ok"}'
           schema:
             type: string
-      summary: GetTags
+      summary: GetTagLists
+      tags:
+      - 标签
     post:
-      description: Add multiple article tags
+      description: Add multiple blogArticle tags
       parameters:
       - description: 标签名称
         in: query
@@ -201,6 +232,8 @@ paths:
           schema:
             type: string
       summary: AddTags
+      tags:
+      - 标签
   /api/v1/tags/{id}:
     delete:
       parameters:
@@ -217,8 +250,10 @@ paths:
           schema:
             type: string
       summary: DeleteTags
+      tags:
+      - 标签
     put:
-      description: Edit multiple article tags
+      description: Edit multiple blogArticle tags
       parameters:
       - description: ID
         in: path
@@ -247,7 +282,9 @@ paths:
           schema:
             type: string
       summary: EditTags
-  /auth:
+      tags:
+      - 标签
+  /blogAuth:
     get:
       consumes:
       - application/json
@@ -272,5 +309,41 @@ paths:
             type: string
       summary: 获取用户信息
       tags:
-      - auth
+      - Auth
+  /upload:
+    post:
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"ok","data":{}}'
+          schema:
+            type: string
+      summary: Upload image
+      tags:
+      - 图片上传
+  /upload/file:
+    post:
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"ok","data":{}}'
+          schema:
+            type: string
+      summary: Upload file
+      tags:
+      - 文件上传
 swagger: "2.0"

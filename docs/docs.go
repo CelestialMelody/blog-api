@@ -10,12 +10,56 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
+        "termsOfService": "https://github.com/CelestialMelody/gin-gorm-practice",
         "contact": {},
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/CelestialMelody/gin-gorm-practice/blob/main/LICENSE"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/register": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":200,\"data\":{},\"msg\":\"ok\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/articles": {
             "get": {
                 "description": "获取多篇文章",
@@ -69,7 +113,7 @@ const docTemplate = `{
                 "tags": [
                     "文章"
                 ],
-                "summary": "Add a article",
+                "summary": "Add a blogArticle",
                 "parameters": [
                     {
                         "type": "integer",
@@ -133,7 +177,7 @@ const docTemplate = `{
                 "tags": [
                     "文章"
                 ],
-                "summary": "Get a single article",
+                "summary": "Get a single blogArticle",
                 "parameters": [
                     {
                         "type": "integer",
@@ -160,7 +204,7 @@ const docTemplate = `{
                 "tags": [
                     "文章"
                 ],
-                "summary": "Update a article",
+                "summary": "Update a blogArticle",
                 "parameters": [
                     {
                         "type": "integer",
@@ -208,7 +252,7 @@ const docTemplate = `{
                 "tags": [
                     "文章"
                 ],
-                "summary": "Delete a article",
+                "summary": "Delete a blogArticle",
                 "parameters": [
                     {
                         "type": "integer",
@@ -230,11 +274,14 @@ const docTemplate = `{
         },
         "/api/v1/tags": {
             "get": {
-                "description": "Get multiple article tags",
+                "description": "Get multiple blogArticle tags",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "GetTags",
+                "tags": [
+                    "标签"
+                ],
+                "summary": "GetTagLists",
                 "parameters": [
                     {
                         "type": "string",
@@ -271,9 +318,12 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add multiple article tags",
+                "description": "Add multiple blogArticle tags",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "标签"
                 ],
                 "summary": "AddTags",
                 "parameters": [
@@ -310,9 +360,12 @@ const docTemplate = `{
         },
         "/api/v1/tags/{id}": {
             "put": {
-                "description": "Edit multiple article tags",
+                "description": "Edit multiple blogArticle tags",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "标签"
                 ],
                 "summary": "EditTags",
                 "parameters": [
@@ -357,6 +410,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "标签"
+                ],
                 "summary": "DeleteTags",
                 "parameters": [
                     {
@@ -377,7 +433,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth": {
+        "/blogAuth": {
             "get": {
                 "description": "获取用户信息",
                 "consumes": [
@@ -387,7 +443,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "获取用户信息",
                 "parameters": [
@@ -415,6 +471,62 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/upload": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "图片上传"
+                ],
+                "summary": "Upload image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"message\":\"ok\",\"data\":{}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/upload/file": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "文件上传"
+                ],
+                "summary": "Upload file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\":0,\"message\":\"ok\",\"data\":{}}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`
@@ -423,10 +535,10 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Gin Gorm API",
-	Description:      "This is a sample server celler server.",
+	Title:            "Golang Gin API",
+	Description:      "An example of gin",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
