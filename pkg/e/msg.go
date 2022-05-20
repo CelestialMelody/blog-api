@@ -35,6 +35,11 @@ const (
 	ERROR_NOT_EXIST_USER = 5001
 )
 
+const (
+	CACHE_ARTICLE = "ARTICLE"
+	CACHE_TAG     = "TAG"
+)
+
 var MsgFlags = map[int]string{
 	SUCCESS:        "OK",
 	ERROR:          "FAIL",
