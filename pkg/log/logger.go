@@ -35,10 +35,10 @@ func pathExists(path string) bool {
 
 func getLogWriter(fileName string) zapcore.WriteSyncer {
 	dir, _ := os.Getwd() // 获取当前目录
-	dir = dir + "/runtime/logs"
+	dir = dir + "/logs"
 	if !pathExists(dir) {
 		if err := os.Mkdir(dir, os.ModePerm); err != nil {
-			logs.Warn("create dir %s failed", dir)
+			logs.Warn("create dir %s failed\n\treson is %s", dir, err.Error())
 		}
 	}
 	lumberJackLogger := &lumberjack.Logger{
