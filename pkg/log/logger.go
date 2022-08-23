@@ -15,6 +15,19 @@ type ZapLevel int
 
 var Logger *zap.Logger
 
+func Init() {
+	if conf.AppConfig.RunMode == "debug" {
+		// 开发模式 日志输出到终端
+		core := zapcore.NewTee(
+			zapcore.NewCore(getEncoder(),
+				zapcore.Lock(os.Stdout), zapcore.DebugLevel),
+		)
+		Logger = zap.New(core, zap.AddCaller())
+	} else {
+		fileLog()
+	}
+}
+
 func pathExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil || os.IsExist(err)
@@ -24,8 +37,9 @@ func getLogWriter(fileName string) zapcore.WriteSyncer {
 	dir, _ := os.Getwd() // 获取当前目录
 	dir = dir + "/runtime/logs"
 	if !pathExists(dir) {
-		_ = os.Mkdir(dir, os.ModePerm)
-		logs.Warn("create dir %s failed", dir)
+		if err := os.Mkdir(dir, os.ModePerm); err != nil {
+			logs.Warn("create dir %s failed", dir)
+		}
 	}
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   dir + "/" + fileName, // 日志文件路径
@@ -71,7 +85,7 @@ func CustomTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format(conf.LogConfig.TimeFormat))
 }
 
-func Init() {
+func fileLog() {
 	// 调试级别
 	debugPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 		return lev == zap.DebugLevel

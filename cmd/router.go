@@ -2,6 +2,7 @@ package main
 
 import (
 	"blog-api/api/v1/controller"
+	_ "blog-api/docs"
 	"blog-api/pkg/jwt"
 	"blog-api/pkg/upload"
 	"github.com/gin-gonic/gin"

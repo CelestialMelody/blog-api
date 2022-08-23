@@ -1,5 +1,5 @@
 app:
-  port: 8088
+  port: 8080
   host: localhost
   jwtSecret: hdu20011717
   runtimeRootPath: runtime/
@@ -28,7 +28,7 @@ db:
     idleTimeOut: 100
 
 image:
-  imagePrefixUrl: http://localhost:8088
+  imagePrefixUrl: http://localhost:8080
   imageSavePath: upload/images
   imageMaxSize: 5
   imageAllowExt: ["jpg", "jpeg", "png", "gif"]

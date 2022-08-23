@@ -2,12 +2,14 @@ package main
 
 import (
 	"blog-api/conf"
+	_ "blog-api/docs"
 	"blog-api/internal/dao"
 	"blog-api/pkg/log"
 	"blog-api/pkg/mysql"
 	"blog-api/pkg/redis"
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
 	"os"
@@ -32,9 +34,10 @@ func main() {
 		return
 	}
 	router := InitRouter()
-
 	log.Init()
 	dao.Init()
+
+	gin.SetMode(conf.AppConfig.RunMode)
 
 	server := &http.Server{
 		Addr:           fmt.Sprintf(":%s", conf.AppConfig.Port),
