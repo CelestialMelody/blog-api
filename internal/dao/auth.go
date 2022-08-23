@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"gin-gorm-practice/internal/models"
-	"gin-gorm-practice/pkg/mysql"
+	model "blog-api/internal/models"
+	"blog-api/pkg/mysql"
 )
 
 func CheckAuth(username, password string) error {
