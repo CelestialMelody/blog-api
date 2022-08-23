@@ -1,8 +1,8 @@
 package blogTag
 
 import (
+	"gin-gorm-practice/deprecated"
 	"gin-gorm-practice/pkg/mysql"
-	"gin-gorm-practice/temp_deprecated"
 	"github.com/sirupsen/logrus"
 )
 
