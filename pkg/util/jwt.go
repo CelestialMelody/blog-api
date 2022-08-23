@@ -1,8 +1,8 @@
 package util
 
 import (
-	"gin-gorm-practice/conf"
-	"gin-gorm-practice/pkg/log"
+	"blog-api/conf"
+	"blog-api/pkg/log"
 	"github.com/dgrijalva/jwt-go"
 	"go.uber.org/zap"
 	"time"
@@ -32,7 +32,7 @@ func GenerateToken(username, password string) (string, error) {
 	}
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// 签名
-	jwtSecret = []byte(conf.AppSetting.JwtSecret)
+	jwtSecret = []byte(conf.AppConfig.JwtSecret)
 	token, err := tokenClaims.SignedString(jwtSecret)
 	log.Logger.Info("token", zap.String("token", token))
 	if err != nil {

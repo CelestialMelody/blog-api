@@ -1,7 +1,7 @@
 package util
 
 import (
-	"gin-gorm-practice/conf"
+	"blog-api/conf"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
 )
@@ -12,7 +12,7 @@ func GetPage(c *gin.Context) int {
 	// com.StrTo Convert string to specify type.
 	page, _ := com.StrTo(c.Query("page")).Int()
 	if page > 0 {
-		result = (page - 1) * conf.AppSetting.PageSize
+		result = (page - 1) * conf.AppConfig.PageSize
 	}
 	return result
 }

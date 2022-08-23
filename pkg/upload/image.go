@@ -1,11 +1,11 @@
 package upload
 
 import (
+	"blog-api/conf"
+	"blog-api/pkg/file"
+	"blog-api/pkg/log"
+	"blog-api/pkg/util"
 	"fmt"
-	"gin-gorm-practice/conf"
-	"gin-gorm-practice/pkg/file"
-	"gin-gorm-practice/pkg/log"
-	"gin-gorm-practice/pkg/util"
 	"go.uber.org/zap"
 	"mime/multipart"
 	"os"
@@ -13,15 +13,15 @@ import (
 )
 
 func GetImageSavePath() string {
-	return conf.ImageSetting.ImageSavePath
+	return conf.ImageConfig.ImageSavePath
 }
 
 func GetImagePrefixUrl() string {
-	return conf.ImageSetting.ImagePrefixUrl
+	return conf.ImageConfig.ImagePrefixUrl
 }
 
 func GetRuntimeRootPath() string {
-	return conf.ImageSetting.ImageSavePath
+	return conf.ImageConfig.ImageSavePath
 }
 
 func GetImageFullUrl(name string) string {
@@ -43,7 +43,7 @@ func GetImageFullPath() string {
 // CheckImageExt 检查图片后缀
 func CheckImageExt(fileName string) bool {
 	ext := file.GetExt(fileName)
-	for _, allowExt := range conf.ImageSetting.ImageAllowExt {
+	for _, allowExt := range conf.ImageConfig.ImageAllowExt {
 		if strings.ToUpper(allowExt) == strings.ToUpper(ext) {
 			return true
 		}
@@ -57,7 +57,7 @@ func CheckImageSize(f multipart.File) bool { // 检查图片大小
 		log.Logger.Warn("获取文件大小失败", zap.Error(err))
 		return false
 	}
-	return size <= conf.ImageSetting.ImageMaxSize
+	return size <= conf.ImageConfig.ImageMaxSize
 }
 
 func CheckImage(src string) error {

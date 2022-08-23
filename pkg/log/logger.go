@@ -1,8 +1,8 @@
 package log
 
 import (
+	"blog-api/conf"
 	"fmt"
-	"gin-gorm-practice/conf"
 	"github.com/astaxie/beego/logs"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
@@ -68,7 +68,7 @@ func getEncoderConfig() (config zapcore.EncoderConfig) {
 
 // CustomTimeEncoder 自定义日志输出时间格式
 func CustomTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format(conf.LogSetting.TimeFormat))
+	enc.AppendString(t.Format(conf.LogConfig.TimeFormat))
 }
 
 func Init() {

@@ -1,7 +1,7 @@
 package app
 
 import (
-	"gin-gorm-practice/pkg/e"
+	"blog-api/pkg/e"
 	"github.com/gin-gonic/gin"
 )
 

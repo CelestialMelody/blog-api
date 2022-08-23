@@ -1,13 +1,9 @@
-package T
+package conf
 
 import (
-	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
-	"testing"
-	"time"
 )
 
 type Config struct {
@@ -16,17 +12,16 @@ type Config struct {
 
 var (
 	GlobalConfig *Config
-	logger       = zap.NewExample()
 )
 
-func Init() {
+func init() {
 	GlobalConfig = &Config{
 		Viper: viper.New(),
 	}
 	// 初始化配置文件
 	GlobalConfig.SetConfigName("app")
 	GlobalConfig.SetConfigType("yaml")
-	GlobalConfig.AddConfigPath("../set") // 搜索路径 yaml在当前目录
+	GlobalConfig.AddConfigPath(".")
 
 	// 读取配置文件
 	err := GlobalConfig.ReadInConfig()
@@ -34,7 +29,6 @@ func Init() {
 		// WithField  分配一个新条目，并在其中添加了一个字段
 		// WithError  将一个错误作为单个字段（使用ErrorKey中定义的键）添加到条目中
 		logrus.WithField("dao", "GlobalConfig").WithError(err).Panicf("unable to read global dao")
-		//logger.Panic("unable to read global dao", zap.Error(err))
 	}
 
 	// 监听配置文件变化
@@ -43,30 +37,6 @@ func Init() {
 		err := GlobalConfig.ReadInConfig()
 		if err != nil {
 			logrus.WithField("dao", "GlobalConfig").Info("dao file update; change: ", e.Name)
-			//logger.Info("dao file update;", zap.Any("change:", e.Name))
 		}
 	})
-}
-
-func TestInit(t *testing.T) {
-	Init()
-	fmt.Println(GlobalConfig.GetString("app.jwtSecret"))
-	fmt.Println(GlobalConfig.GetString("mysql.mysql.username"))
-	fmt.Println(GlobalConfig.GetString("mysql.redis.host"))
-
-	type DataBase struct {
-		Address     string
-		User        string
-		Password    string
-		Database    string
-		MaxIdle     int
-		MaxOpen     int
-		MaxLifetime time.Duration
-		TablePrefix string
-	}
-
-	var db DataBase
-
-	_ = GlobalConfig.UnmarshalKey("db.mysql", &db)
-	fmt.Printf("%+v\n", db)
 }

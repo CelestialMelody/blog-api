@@ -1,7 +1,7 @@
 package app
 
 import (
-	"gin-gorm-practice/pkg/log"
+	"blog-api/pkg/log"
 	"go.uber.org/zap"
 )
 
