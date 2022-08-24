@@ -24,14 +24,14 @@ func UploadImage(c *gin.Context) {
 	file, fileHeader, err := c.Request.FormFile("image") // 获取上传文件
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.ErrorUploadImageFail, nil)
+		appG.Response(http.StatusBadRequest, e.UploadImageFail, nil)
 		return
 	}
 
 	if fileHeader == nil {
 		err = fmt.Errorf("image is nil")
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.ErrorUploadImageFail, nil)
+		appG.Response(http.StatusBadRequest, e.UploadImageFail, nil)
 		return
 	}
 
@@ -73,7 +73,7 @@ func UploadImages(c *gin.Context) {
 		file, err := files[i].Open()
 		if err != nil {
 			app.MarkError(err)
-			appG.Response(http.StatusBadRequest, e.ErrorUploadImageFail, nil)
+			appG.Response(http.StatusBadRequest, e.UploadImageFail, nil)
 		}
 		imageName := upload.GetImageName(files[i].Filename)
 		savePath := upload.GetImageSavePath()
@@ -96,23 +96,23 @@ func fileUpload(imageName string, file multipart.File, fileHeader *multipart.Fil
 		if !upload.CheckImageExt(imageName) {
 			err := fmt.Errorf("image format is invalid")
 			app.MarkError(err)
-			appG.Response(http.StatusBadRequest, e.ErrorUploadCheckImageFormat, nil)
+			appG.Response(http.StatusBadRequest, e.UploadCheckImageFormat, nil)
 		}
 		if !upload.CheckImageSize(file) {
 			err := fmt.Errorf("image size is invalid")
 			app.MarkError(err)
-			appG.Response(http.StatusBadRequest, e.ErrorUploadCheckImageSize, nil)
+			appG.Response(http.StatusBadRequest, e.UploadCheckImageSize, nil)
 		}
 		return
 	}
 
 	if err := upload.CheckImage(fullPath); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorUploadCheckImageFail, nil)
+		appG.Response(http.StatusInternalServerError, e.UploadCheckImageFail, nil)
 		return
 	}
 	if err := c.SaveUploadedFile(fileHeader, src); err != nil { // 保存文件
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorUploadImageFail, nil)
+		appG.Response(http.StatusInternalServerError, e.UploadImageFail, nil)
 	}
 }

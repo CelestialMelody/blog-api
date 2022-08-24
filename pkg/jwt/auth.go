@@ -1,12 +1,12 @@
 package jwt
 
 import (
+	"blog-api/pkg/app"
 	"blog-api/pkg/e"
 	"blog-api/pkg/log"
 	"blog-api/pkg/util"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -24,11 +24,11 @@ func JWT() gin.HandlerFunc {
 			if err != nil { // token 校验失败
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired: // time.Now().Unix() > claims.ExpiresAt
-					code = e.ErrorAuthCheckTokenTimeout
-					log.Logger.Error("token 过期", zap.String("err", err.Error()))
+					code = e.UserCheckTokenTimeout
+					app.MarkError(err)
 				default:
-					code = e.ErrorAuthCheckTokenFail
-					log.Logger.Error("token 校验失败", zap.String("err", err.Error()))
+					code = e.UserCheckTokenFail
+					app.MarkError(err)
 				}
 			}
 		}
@@ -41,7 +41,7 @@ func JWT() gin.HandlerFunc {
 				"data":  data,
 				"token": token,
 			})
-			log.Logger.Error("JWT", zap.String("err", e.GetMsg(code)))
+			log.Logger.Error(e.GetMsg(code))
 			// 终止后续操作
 			c.Abort()
 			return

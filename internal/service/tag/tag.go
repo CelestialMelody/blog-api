@@ -1,4 +1,4 @@
-package tagS
+package tagSrv
 
 import (
 	"blog-api/internal/dao"
@@ -6,7 +6,9 @@ import (
 	"blog-api/internal/service/cache"
 	"blog-api/pkg/app"
 	"blog-api/pkg/redis"
+	"context"
 	jsoniter "github.com/json-iterator/go"
+	"time"
 )
 
 type Tag struct {
@@ -68,21 +70,20 @@ func (t *Tag) Count() (int64, error) {
 }
 
 func (t *Tag) GetAll() ([]model.Tag, error) {
+	ctx := context.Background()
 	tagCache := cache.Tag{
 		State:    t.State,
 		PageNum:  t.PageNum,
 		PageSize: t.PageSize,
 	}
 	key := tagCache.GetKey()
-	if redis.Exists(key) {
-		data, err := redis.Get(key)
-		if err != nil {
-			app.MarkError(err)
-		} else {
-			var tags []model.Tag
-			_ = json.Unmarshal(data, &tags)
-			return tags, nil
-		}
+	val, err := redis.RDB.Get(ctx, key).Result()
+	if err != nil {
+		app.MarkError(err)
+	} else {
+		var tags []model.Tag
+		_ = json.Unmarshal([]byte(val), &tags)
+		return tags, nil
 	}
 
 	tags, err := dao.GetTags(t.PageNum, t.PageSize, t.getMaps())
@@ -90,7 +91,7 @@ func (t *Tag) GetAll() ([]model.Tag, error) {
 		return nil, err
 	}
 
-	if err := redis.Set(key, tags, 3600); err != nil {
+	if err := redis.RDB.Set(ctx, key, tags, time.Hour).Err(); err != nil {
 		app.MarkError(err)
 	}
 

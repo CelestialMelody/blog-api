@@ -19,7 +19,7 @@ type App struct {
 	RunMode         string
 }
 
-type DataBase struct {
+type MySqlDB struct {
 	Address     string
 	User        string
 	Password    string
@@ -54,7 +54,7 @@ type Log struct {
 
 var (
 	AppConfig   App
-	DBConfig    DataBase
+	DBConfig    MySqlDB
 	RedisConfig Redis
 	ImageConfig Image
 	LogConfig   Log

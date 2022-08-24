@@ -2,7 +2,7 @@ package controller
 
 import (
 	"blog-api/conf"
-	"blog-api/internal/service/tagS"
+	tagSrv "blog-api/internal/service/tag"
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
 	"blog-api/pkg/util"
@@ -40,7 +40,7 @@ func GetTagLists(c *gin.Context) {
 		return
 	}
 
-	tagServeice := tagS.Tag{
+	tagServeice := tagSrv.Tag{
 		Name:     need.Name,
 		State:    need.State,
 		PageNum:  util.GetPage(c),
@@ -50,13 +50,13 @@ func GetTagLists(c *gin.Context) {
 	tagLists, err := tagServeice.GetAll()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorGetTagsFail, nil)
+		appG.Response(http.StatusInternalServerError, e.GetTagsFail, nil)
 	}
 
 	total, err := tagServeice.Count()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorCountTagFail, nil)
+		appG.Response(http.StatusInternalServerError, e.CountTagFail, nil)
 	}
 
 	appG.Response(http.StatusOK, e.Success, map[string]interface{}{
@@ -94,7 +94,7 @@ func AddTags(c *gin.Context) {
 		return
 	}
 
-	tagService := tagS.Tag{
+	tagService := tagSrv.Tag{
 		Name:      need.Name,
 		State:     need.State,
 		CreatedBy: need.CreatedBy,
@@ -102,13 +102,13 @@ func AddTags(c *gin.Context) {
 
 	if err := tagService.ExistByName(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorExistTag, nil)
+		appG.Response(http.StatusInternalServerError, e.ExistTag, nil)
 		return
 	}
 
 	if err := tagService.Add(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorAddTagFail, nil)
+		appG.Response(http.StatusInternalServerError, e.AddTagFail, nil)
 		return
 	}
 
@@ -147,7 +147,7 @@ func EditTags(c *gin.Context) {
 		return
 	}
 
-	tagService := tagS.Tag{
+	tagService := tagSrv.Tag{
 		ID:         need.ID,
 		Name:       need.Name,
 		State:      need.State,
@@ -156,13 +156,13 @@ func EditTags(c *gin.Context) {
 
 	if err := tagService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorExistTag, nil)
+		appG.Response(http.StatusInternalServerError, e.ExistTag, nil)
 		return
 	}
 
 	if err := tagService.Edit(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorEditTagFail, nil)
+		appG.Response(http.StatusInternalServerError, e.EditTagFail, nil)
 		return
 	}
 
@@ -186,16 +186,16 @@ func DeleteTags(c *gin.Context) {
 		return
 	}
 
-	tagService := tagS.Tag{ID: id}
+	tagService := tagSrv.Tag{ID: id}
 	if err := tagService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorExistTag, nil)
+		appG.Response(http.StatusInternalServerError, e.ExistTag, nil)
 		return
 	}
 
 	if err := tagService.Delete(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorDeleteTagFail, nil)
+		appG.Response(http.StatusInternalServerError, e.DeleteTagFail, nil)
 		return
 	}
 

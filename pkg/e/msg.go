@@ -5,34 +5,39 @@ const (
 	Error         = 500
 	InvalidParams = 400
 
-	ErrorExistTag      = 1001
-	ErrorAddTag        = 1002
-	ErrorNotExistTag   = 1003
-	ErrorGetTagsFail   = 1004
-	ErrorCountTagFail  = 1005
-	ErrorAddTagFail    = 1006
-	ErrorEditTagFail   = 1007
-	ErrorDeleteTagFail = 1008
+	ExistTag      = 1001
+	AddTag        = 1002
+	NotExistTag   = 1003
+	GetTagsFail   = 1004
+	CountTagFail  = 1005
+	AddTagFail    = 1006
+	EditTagFail   = 1007
+	DeleteTagFail = 1008
 
-	ErrorNotExistArticle     = 2001
-	ErrorGetArticleFail      = 2002
-	ErrorGetArticleListFail  = 2003
-	ErrorGetArticleCountFail = 2004
-	ErrorAddArticleFail      = 2005
-	ErrorEditArticleFail     = 2006
-	ErrorDeleteArticleFail   = 2007
+	NotExistArticle     = 2001
+	GetArticleFail      = 2002
+	GetArticleListFail  = 2003
+	GetArticleCountFail = 2004
+	AddArticleFail      = 2005
+	EditArticleFail     = 2006
+	DeleteArticleFail   = 2007
 
-	ErrorAuthCheckTokenFail    = 3001
-	ErrorAuthCheckTokenTimeout = 3002
-	ErrorAuthToken             = 3003
-	ErrorRegisterFail          = 3004
+	UserCheckTokenFail       = 3001
+	UserCheckTokenTimeout    = 3002
+	RegisterFail             = 3003
+	UsernameExist            = 3004
+	GenerateTokenFail        = 3005
+	GenerateRefreshTokenFail = 3006
+	UserNotExist             = 3007
+	PasswordError            = 3008
+	LoginFail                = 3009
 
-	ErrorUploadImageFail        = 4001
-	ErrorUploadCheckImageFail   = 4003
-	ErrorUploadCheckImageFormat = 4004
-	ErrorUploadCheckImageSize   = 4005
+	UploadImageFail        = 4001
+	UploadCheckImageFail   = 4003
+	UploadCheckImageFormat = 4004
+	UploadCheckImageSize   = 4005
 
-	ErrorNotExistUser = 5001
+	NotExistUser = 5001
 )
 
 const (
@@ -45,33 +50,38 @@ var MsgFlags = map[int]string{
 	Error:         "FAIL",
 	InvalidParams: "请求参数错误",
 
-	ErrorExistTag:      "已存在该标签名称",
-	ErrorNotExistTag:   "该标签不存在",
-	ErrorAddTag:        "新增标签失败",
-	ErrorGetTagsFail:   "获取多个标签失败",
-	ErrorCountTagFail:  "统计标签失败",
-	ErrorAddTagFail:    "新增标签失败",
-	ErrorEditTagFail:   "编辑标签失败",
-	ErrorDeleteTagFail: "删除标签失败",
+	ExistTag:      "已存在该标签名称",
+	NotExistTag:   "该标签不存在",
+	AddTag:        "新增标签失败",
+	GetTagsFail:   "获取多个标签失败",
+	CountTagFail:  "统计标签失败",
+	AddTagFail:    "新增标签失败",
+	EditTagFail:   "编辑标签失败",
+	DeleteTagFail: "删除标签失败",
 
-	ErrorNotExistArticle:     "该文章不存在",
-	ErrorGetArticleFail:      "获取文章失败",
-	ErrorGetArticleListFail:  "获取文章列表失败",
-	ErrorGetArticleCountFail: "获取文章总数失败",
-	ErrorAddArticleFail:      "新增文章失败",
-	ErrorEditArticleFail:     "编辑文章失败",
-	ErrorDeleteArticleFail:   "删除文章失败",
+	NotExistArticle:     "该文章不存在",
+	GetArticleFail:      "获取文章失败",
+	GetArticleListFail:  "获取文章列表失败",
+	GetArticleCountFail: "获取文章总数失败",
+	AddArticleFail:      "新增文章失败",
+	EditArticleFail:     "编辑文章失败",
+	DeleteArticleFail:   "删除文章失败",
 
-	ErrorAuthCheckTokenFail:    "Token鉴权失败",
-	ErrorAuthCheckTokenTimeout: "Token已超时",
-	ErrorAuthToken:             "Token生成失败",
-	ErrorNotExistUser:          "该用户不存在",
-	ErrorRegisterFail:          "注册失败",
+	UserCheckTokenFail:       "Token鉴权失败",
+	UserCheckTokenTimeout:    "Token已超时",
+	NotExistUser:             "该用户不存在",
+	RegisterFail:             "注册失败",
+	UsernameExist:            "用户名已存在",
+	GenerateTokenFail:        "生成Token失败",
+	GenerateRefreshTokenFail: "生成RefreshToken失败",
+	UserNotExist:             "用户不存在",
+	PasswordError:            "密码错误",
+	LoginFail:                "登录失败",
 
-	ErrorUploadImageFail:        "上传图片失败",
-	ErrorUploadCheckImageFail:   "检查图片失败",
-	ErrorUploadCheckImageFormat: "校验图片格式失败",
-	ErrorUploadCheckImageSize:   "校验图片大小失败",
+	UploadImageFail:        "上传图片失败",
+	UploadCheckImageFail:   "检查图片失败",
+	UploadCheckImageFormat: "校验图片格式失败",
+	UploadCheckImageSize:   "校验图片大小失败",
 }
 
 func GetMsg(code int) string {

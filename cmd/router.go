@@ -20,19 +20,19 @@ func InitRouter() *gin.Engine {
 		当你程序里有些异常情况你没考虑到的时候，程序就退出了，服务就停止了，所以是必要的。
 	*/
 	router.Use(gin.Recovery()) // 异常处理
-	gin.SetMode(gin.DebugMode) //设置gin的模式，debug模式
 	router.StaticFS("/upload/images", http.Dir(upload.GetImageFullPath()))
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.GET("/auth", controller.GetAuth) // JWT 验证
-	router.POST("/register", controller.Register)
-	router.POST("/upload", controller.UploadImage)
-	router.POST("/uploadImages", controller.UploadImages)
-
 	apiV1 := router.Group("/api/v1")
 	// 接入中间件
 	apiV1.Use(jwt.JWT())
 	{
+		apiV1.GET("/authorInfo", controller.GetAuthorInfo)   // JWT 验证
+		apiV1.POST("/register", controller.Register)         // 注册
+		apiV1.POST("/login", controller.Login)               // 登录
+		apiV1.POST("/upload", controller.UploadImage)        // 上传图片
+		apiV1.POST("/uploadImages", controller.UploadImages) // 上传多张图片
+
 		apiV1.GET("/tags", controller.GetTagLists)       // 获取标签列表
 		apiV1.POST("/tags", controller.AddTags)          // 新建标签
 		apiV1.PUT("/tags/:id", controller.EditTags)      // 更新指定标签

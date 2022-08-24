@@ -9,7 +9,7 @@ import (
 func Init() {
 	err := mysql.DB.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(
 		&model.Article{},
-		&model.Auth{},
+		&model.User{},
 		&model.Tag{},
 	)
 	if err != nil {

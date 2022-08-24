@@ -3,8 +3,8 @@ package controller
 import (
 	"blog-api/conf"
 	"blog-api/internal/dao"
-	"blog-api/internal/service/articleS"
-	"blog-api/internal/service/tagS"
+	articleSrv "blog-api/internal/service/article"
+	tagSrv "blog-api/internal/service/tag"
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
 	"blog-api/pkg/util"
@@ -33,14 +33,14 @@ func GetArticle(c *gin.Context) {
 	}
 
 	if err := dao.ExistArticleByID(id); err != nil {
-		appG.Response(http.StatusInternalServerError, e.ErrorNotExistArticle, nil)
+		appG.Response(http.StatusInternalServerError, e.NotExistArticle, nil)
 	}
 
-	articleService := articleS.Article{ID: id}
+	articleService := articleSrv.Article{ID: id}
 	article, err := articleService.Get()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorGetArticleFail, nil)
+		appG.Response(http.StatusInternalServerError, e.GetArticleFail, nil)
 		return
 	}
 
@@ -76,7 +76,7 @@ func GetArticleLists(c *gin.Context) {
 		return
 	}
 
-	articleService := articleS.Article{
+	articleService := articleSrv.Article{
 		TagID:    need.tagId,
 		State:    need.state,
 		PageNum:  util.GetPage(c),
@@ -86,14 +86,14 @@ func GetArticleLists(c *gin.Context) {
 	articleLists, err := articleService.GetAll()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorGetArticleListFail, nil)
+		appG.Response(http.StatusInternalServerError, e.GetArticleListFail, nil)
 		return
 	}
 
 	total, err := articleService.Count()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorGetArticleCountFail, nil)
+		appG.Response(http.StatusInternalServerError, e.GetArticleCountFail, nil)
 		return
 	}
 
@@ -146,14 +146,14 @@ func AddArticle(c *gin.Context) {
 		return
 	}
 
-	tagService := tagS.Tag{ID: need.tagId}
+	tagService := tagSrv.Tag{ID: need.tagId}
 	if err := tagService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorNotExistTag, nil)
+		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
 		return
 	}
 
-	articleService := articleS.Article{
+	articleService := articleSrv.Article{
 		TagID:         need.tagId,
 		Title:         need.title,
 		Desc:          need.desc,
@@ -165,7 +165,7 @@ func AddArticle(c *gin.Context) {
 
 	if err := articleService.Add(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorAddArticleFail, nil)
+		appG.Response(http.StatusInternalServerError, e.AddArticleFail, nil)
 		return
 	}
 
@@ -214,7 +214,7 @@ func EditArticle(c *gin.Context) {
 		return
 	}
 
-	articleService := articleS.Article{
+	articleService := articleSrv.Article{
 		ID:            need.id,
 		TagID:         need.tagID,
 		Title:         need.title,
@@ -227,20 +227,20 @@ func EditArticle(c *gin.Context) {
 
 	if err := articleService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorNotExistArticle, nil)
+		appG.Response(http.StatusInternalServerError, e.NotExistArticle, nil)
 		return
 	}
 
-	tagService := tagS.Tag{ID: need.tagID}
+	tagService := tagSrv.Tag{ID: need.tagID}
 	if err := tagService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorNotExistTag, nil)
+		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
 		return
 	}
 
 	if err := articleService.Edit(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorEditArticleFail, nil)
+		appG.Response(http.StatusInternalServerError, e.EditArticleFail, nil)
 		return
 	}
 
@@ -265,16 +265,16 @@ func DeleteArticle(c *gin.Context) {
 		return
 	}
 
-	articleService := articleS.Article{ID: id}
+	articleService := articleSrv.Article{ID: id}
 	if err := articleService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorNotExistArticle, nil)
+		appG.Response(http.StatusInternalServerError, e.NotExistArticle, nil)
 		return
 	}
 
 	if err := articleService.Delete(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ErrorDeleteArticleFail, nil)
+		appG.Response(http.StatusInternalServerError, e.DeleteArticleFail, nil)
 		return
 	}
 

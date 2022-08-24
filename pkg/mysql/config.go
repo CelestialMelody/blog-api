@@ -78,11 +78,11 @@ func CreateDB(dbInfo struct {
 		Pass: dbInfo.Pass,
 		DB:   dbInfo.DB,
 	}
-	tablePrefix := conf.GlobalConfig.GetString("mysql.mysql.tablePrefix")
+	//tablePrefix := conf.DBConfig.TablePrefix
 	DB, err := gorm.Open(mysql.Open(CreateDSN(cfg)), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   tablePrefix, // 数据库表前缀
-			SingularTable: true,        // 使用单数表名
+			//TablePrefix:   tablePrefix, // 数据库表前缀
+			SingularTable: true, // 使用单数表名
 		},
 		PrepareStmt: true,           // 预处理语句
 		Logger:      logger.Default, // 日志级别

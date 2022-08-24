@@ -1,4 +1,4 @@
-package articleS
+package articleSrv
 
 import (
 	"blog-api/internal/dao"
@@ -6,7 +6,9 @@ import (
 	"blog-api/internal/service/cache"
 	"blog-api/pkg/app"
 	"blog-api/pkg/redis"
+	"context"
 	jsoniter "github.com/json-iterator/go"
+	"time"
 )
 
 type Article struct {
@@ -60,15 +62,15 @@ func (a *Article) Edit() error {
 func (a *Article) Get() (*model.Article, error) {
 	articleCache := cache.Article{ID: a.ID}
 	key := articleCache.GetArticleKey()
-	if redis.Exists(key) {
-		data, err := redis.Get(key)
-		if err != nil {
-			app.MarkError(err)
-		} else {
-			var article *model.Article
-			_ = json.Unmarshal(data, &article)
-			return article, nil
-		}
+	ctx := context.Background()
+	val, err := redis.RDB.Get(ctx, key).Result()
+
+	if err != nil {
+		app.MarkError(err)
+	} else {
+		var article *model.Article
+		_ = json.Unmarshal([]byte(val), &article)
+		return article, nil
 	}
 
 	article, err := dao.GetArticle(a.ID)
@@ -76,7 +78,7 @@ func (a *Article) Get() (*model.Article, error) {
 		return nil, err
 	}
 
-	if err := redis.Set(key, article, 3600); err != nil {
+	if err := redis.RDB.Set(ctx, key, article, time.Hour).Err(); err != nil {
 		app.MarkError(err)
 	}
 	return article, nil
@@ -94,6 +96,7 @@ func (a *Article) getMaps() map[string]interface{} {
 }
 
 func (a *Article) GetAll() ([]*model.Article, error) {
+	ctx := context.Background()
 	articlesCache := cache.Article{
 		TagID:    a.TagID,
 		State:    a.State,
@@ -102,22 +105,21 @@ func (a *Article) GetAll() ([]*model.Article, error) {
 	}
 
 	key := articlesCache.GetArticlesKey()
-	if redis.Exists(key) {
-		data, err := redis.Get(key)
-		if err != nil {
-			app.MarkError(err)
-		} else {
-			var articles []*model.Article
-			_ = json.Unmarshal(data, &articles)
-			return articles, nil
-		}
+	val, err := redis.RDB.Get(ctx, key).Result()
+	if err != nil {
+		app.MarkError(err)
+	} else {
+		var articles []*model.Article
+		_ = json.Unmarshal([]byte(val), &articles)
+		return articles, nil
 	}
 
 	articles, err := dao.GetArticleLists(a.PageNum, a.PageSize, a.getMaps())
 	if err != nil {
 		return nil, err
 	}
-	if err := redis.Set(key, articles, 3600); err != nil {
+
+	if err := redis.RDB.Set(ctx, key, articles, time.Hour).Err(); err != nil {
 		app.MarkError(err)
 	}
 	return articles, nil
