@@ -36,7 +36,7 @@ func GetTagLists(c *gin.Context) {
 
 	if err := validate.Struct(need); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
@@ -50,16 +50,16 @@ func GetTagLists(c *gin.Context) {
 	tagLists, err := tagServeice.GetAll()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_GET_TAGS_FAIL, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorGetTagsFail, nil)
 	}
 
 	total, err := tagServeice.Count()
 	if err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_COUNT_TAG_FAIL, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorCountTagFail, nil)
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
+	appG.Response(http.StatusOK, e.Success, map[string]interface{}{
 		"lists": tagLists,
 		"total": total,
 	})
@@ -90,7 +90,7 @@ func AddTags(c *gin.Context) {
 
 	if err := validate.Struct(need); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
@@ -102,17 +102,17 @@ func AddTags(c *gin.Context) {
 
 	if err := tagService.ExistByName(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_TAG, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorExistTag, nil)
 		return
 	}
 
 	if err := tagService.Add(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_TAG_FAIL, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorAddTagFail, nil)
 		return
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, nil)
+	appG.Response(http.StatusOK, e.Success, nil)
 }
 
 // EditTags - 编辑多个文章标签 PUT update
@@ -143,7 +143,7 @@ func EditTags(c *gin.Context) {
 
 	if err := validate.Struct(need); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
@@ -156,17 +156,17 @@ func EditTags(c *gin.Context) {
 
 	if err := tagService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_TAG, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorExistTag, nil)
 		return
 	}
 
 	if err := tagService.Edit(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_EDIT_TAG_FAIL, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorEditTagFail, nil)
 		return
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, nil)
+	appG.Response(http.StatusOK, e.Success, nil)
 }
 
 // DeleteTags - 删除多个文章标签
@@ -182,22 +182,22 @@ func DeleteTags(c *gin.Context) {
 
 	if err := validate.Var(id, "required,min=1"); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	tagService := tagS.Tag{ID: id}
 	if err := tagService.ExistByID(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_EXIST_TAG, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorExistTag, nil)
 		return
 	}
 
 	if err := tagService.Delete(); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ERROR_DELETE_TAG_FAIL, nil)
+		appG.Response(http.StatusInternalServerError, e.ErrorDeleteTagFail, nil)
 		return
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, nil)
+	appG.Response(http.StatusOK, e.Success, nil)
 }

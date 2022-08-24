@@ -41,23 +41,23 @@ func GetAuth(c *gin.Context) {
 	// 验证并处理参数
 	if err := valid.Struct(need); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusOK, e.INVALID_PARAMS, data)
+		appG.Response(http.StatusOK, e.InvalidParams, data)
 		return
 	}
 
 	// 验证
 	if err := dao.CheckAuth(need.Username, need.Password); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusOK, e.ERROR_AUTH_CHECK_TOKEN_FAIL, data)
+		appG.Response(http.StatusOK, e.ErrorAuthCheckTokenFail, data)
 		return
 	}
 
 	// 生成token
 	if token, err := util.GenerateToken(need.Username, need.Password); err == nil {
 		data["token"] = token
-		appG.Response(http.StatusOK, e.SUCCESS, data)
+		appG.Response(http.StatusOK, e.Success, data)
 	} else {
 		app.MarkError(err)
-		appG.Response(http.StatusOK, e.ERROR_AUTH_TOKEN, data)
+		appG.Response(http.StatusOK, e.ErrorAuthToken, data)
 	}
 }

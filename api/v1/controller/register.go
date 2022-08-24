@@ -30,21 +30,21 @@ func Register(c *gin.Context) {
 	// 验证并处理参数
 	if err := valid.Struct(need); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	if err := dao.CheckAuth(need.Username, need.Password); err != nil {
 		app.MarkError(err)
-		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_USER, nil)
+		appG.Response(http.StatusOK, e.ErrorNotExistUser, nil)
 		// 创建用户
 		err := dao.Register(need.Username, need.Password)
 		if err != nil {
 			app.MarkError(err)
-			appG.Response(http.StatusOK, e.ERROR_REGIEST_FAIL, nil)
+			appG.Response(http.StatusOK, e.ErrorRegisterFail, nil)
 			return
 		}
 	}
 
-	appG.Response(http.StatusOK, e.SUCCESS, nil)
+	appG.Response(http.StatusOK, e.Success, nil)
 }

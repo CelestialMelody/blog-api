@@ -13,28 +13,28 @@ import (
 func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var data interface{}
-		code := e.SUCCESS
+		code := e.Success
 
 		token := c.Query("token")
 		if token == "" {
-			code = e.INVALID_PARAMS
+			code = e.InvalidParams
 		} else {
 			//claims, err := util.ParseToken(token)
 			_, err := util.ParseToken(token)
 			if err != nil { // token 校验失败
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired: // time.Now().Unix() > claims.ExpiresAt
-					code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
+					code = e.ErrorAuthCheckTokenTimeout
 					log.Logger.Error("token 过期", zap.String("err", err.Error()))
 				default:
-					code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
+					code = e.ErrorAuthCheckTokenFail
 					log.Logger.Error("token 校验失败", zap.String("err", err.Error()))
 				}
 			}
 		}
 
 		// 失败返回结果
-		if code != e.SUCCESS {
+		if code != e.Success {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code":  code,
 				"msg":   e.GetMsg(code),
