@@ -11,12 +11,11 @@ import (
 var jwtSecret []byte
 
 type Claims struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
+	ID int `json:"id"`
 	jwt.StandardClaims
 }
 
-func createToken(id int, username string, t time.Duration) (string, error) {
+func createToken(id int, t time.Duration) (string, error) {
 	var token string
 	var err error
 	// 当前时间
@@ -25,8 +24,7 @@ func createToken(id int, username string, t time.Duration) (string, error) {
 	expireTime := nowTime.Add(t)
 	// 声明
 	claims := Claims{
-		ID:       id,
-		Username: username,
+		ID: id,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			Issuer:    "blog-api",
@@ -44,24 +42,22 @@ func createToken(id int, username string, t time.Duration) (string, error) {
 	return token, err
 }
 
-func GenerateToken(id int, username string) (string, error) {
+func GenerateToken(id int) (string, error) {
 	t := 3 * time.Hour
-	return createToken(id, username, t)
+	return createToken(id, t)
 }
 
-func GenerateRefreshToken(id int, username string) (string, error) {
+func GenerateRefreshToken(id int) (string, error) {
 	t := 30 * 24 * time.Hour
-	return createToken(id, username, t)
+	return createToken(id, t)
 }
 
-// ParseToken
 func ParseToken(token string) (*Claims, error) {
 	// 解析token
 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{},
 		func(token *jwt.Token) (interface{}, error) {
 			return jwtSecret, nil
 		})
-	//log.Logger.Debug("token", zap.String("token", token), zap.Any("err", err))
 	if tokenClaims != nil {
 		// 获取自定义的claims
 		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid { // 校验token

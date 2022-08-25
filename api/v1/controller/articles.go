@@ -7,10 +7,12 @@ import (
 	tagSrv "blog-api/internal/service/tag"
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
+	"blog-api/pkg/log"
 	"blog-api/pkg/util"
 	"blog-api/pkg/validate"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -27,7 +29,7 @@ func GetArticle(c *gin.Context) {
 	appG := app.Gin{C: c}
 
 	if err := validate.Var(id, "required,min=1"); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -39,7 +41,7 @@ func GetArticle(c *gin.Context) {
 	articleService := articleSrv.Article{ID: id}
 	article, err := articleService.Get()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get article fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.GetArticleFail, nil)
 		return
 	}
@@ -71,7 +73,7 @@ func GetArticleLists(c *gin.Context) {
 	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
 
 	if err := validate.Struct(need); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -85,14 +87,14 @@ func GetArticleLists(c *gin.Context) {
 
 	articleLists, err := articleService.GetAll()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get article lists fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.GetArticleListFail, nil)
 		return
 	}
 
 	total, err := articleService.Count()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get article lists count fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.GetArticleCountFail, nil)
 		return
 	}
@@ -141,14 +143,14 @@ func AddArticle(c *gin.Context) {
 	need.coverImageUrl = c.Query("cover_image_url")
 
 	if err := validate.Struct(need); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	tagService := tagSrv.Tag{ID: need.tagId}
 	if err := tagService.ExistByID(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("tag not exist", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
 		return
 	}
@@ -164,7 +166,7 @@ func AddArticle(c *gin.Context) {
 	}
 
 	if err := articleService.Add(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("add article fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.AddArticleFail, nil)
 		return
 	}
@@ -209,7 +211,7 @@ func EditArticle(c *gin.Context) {
 	appG := app.Gin{C: c}
 
 	if err := validate.Struct(need); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -226,20 +228,20 @@ func EditArticle(c *gin.Context) {
 	}
 
 	if err := articleService.ExistByID(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("article not exist", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.NotExistArticle, nil)
 		return
 	}
 
 	tagService := tagSrv.Tag{ID: need.tagID}
 	if err := tagService.ExistByID(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("tag not exist", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
 		return
 	}
 
 	if err := articleService.Edit(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("edit article fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.EditArticleFail, nil)
 		return
 	}
@@ -260,20 +262,20 @@ func DeleteArticle(c *gin.Context) {
 	appG := app.Gin{C: c}
 
 	if err := validate.Var(id, "min=1"); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	articleService := articleSrv.Article{ID: id}
 	if err := articleService.ExistByID(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("article not exist", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.NotExistArticle, nil)
 		return
 	}
 
 	if err := articleService.Delete(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("delete article fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.DeleteArticleFail, nil)
 		return
 	}

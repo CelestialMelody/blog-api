@@ -5,10 +5,12 @@ import (
 	tagSrv "blog-api/internal/service/tag"
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
+	"blog-api/pkg/log"
 	"blog-api/pkg/util"
 	"blog-api/pkg/validate"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -35,7 +37,7 @@ func GetTagLists(c *gin.Context) {
 	need.State = com.StrTo(c.Query("state")).MustInt()
 
 	if err := validate.Struct(need); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid Params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -49,13 +51,13 @@ func GetTagLists(c *gin.Context) {
 
 	tagLists, err := tagServeice.GetAll()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get tag list failed", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.GetTagsFail, nil)
 	}
 
 	total, err := tagServeice.Count()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get tag count failed", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.CountTagFail, nil)
 	}
 
@@ -89,7 +91,7 @@ func AddTags(c *gin.Context) {
 	need.CreatedBy = c.Query("created_by")
 
 	if err := validate.Struct(need); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid Params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -100,14 +102,14 @@ func AddTags(c *gin.Context) {
 		CreatedBy: need.CreatedBy,
 	}
 
-	if err := tagService.ExistByName(); err != nil {
-		app.MarkError(err)
+	if err := tagService.ExistByName(); err == nil {
+		log.Logger.Error("tag has existed", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.ExistTag, nil)
 		return
 	}
 
 	if err := tagService.Add(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("add tag failed", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.AddTagFail, nil)
 		return
 	}
@@ -142,7 +144,7 @@ func EditTags(c *gin.Context) {
 	appG := app.Gin{C: c}
 
 	if err := validate.Struct(need); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -155,13 +157,13 @@ func EditTags(c *gin.Context) {
 	}
 
 	if err := tagService.ExistByID(); err != nil {
-		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ExistTag, nil)
+		log.Logger.Error("not exist tag", zap.Error(err))
+		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
 		return
 	}
 
 	if err := tagService.Edit(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("edit tag fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.EditTagFail, nil)
 		return
 	}
@@ -181,20 +183,20 @@ func DeleteTags(c *gin.Context) {
 	appG := app.Gin{C: c}
 
 	if err := validate.Var(id, "required,min=1"); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	tagService := tagSrv.Tag{ID: id}
-	if err := tagService.ExistByID(); err != nil {
-		app.MarkError(err)
-		appG.Response(http.StatusInternalServerError, e.ExistTag, nil)
+	if err := tagService.ExistByID(); err == nil {
+		log.Logger.Error("not exist tag", zap.Error(err))
+		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
 		return
 	}
 
 	if err := tagService.Delete(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("delete tag fail", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.DeleteTagFail, nil)
 		return
 	}

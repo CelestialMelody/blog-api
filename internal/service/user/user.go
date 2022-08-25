@@ -3,7 +3,6 @@ package userSrv
 import (
 	"blog-api/internal/dao"
 	model "blog-api/internal/models"
-	"blog-api/pkg/app"
 	"blog-api/pkg/e"
 	"blog-api/pkg/log"
 	"blog-api/pkg/redis"
@@ -68,31 +67,36 @@ func (u *User) Register(req Req) (Resp, error) {
 
 	userID, err := dao.Register(user)
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("register error", zap.Error(err))
 		return resp, err
 	}
 
 	// err == nil, id != -1
-	token, _ := tokenSettings(userID, req.Username)
+	token, _ := tokenSettings(userID)
 	resp.UserId = userID
 	resp.Token = token
 	return resp, nil
 }
 
-func tokenSettings(id int, username string) (string, error) {
+func tokenSettings(id int) (string, error) {
 	// acc token: 3h
 	var token, refreshToken string
-	var err error
-	token, err = util.GenerateToken(id, username)
-	if err != nil {
-		return token, errors.New(e.GetMsg(e.GenerateTokenFail))
-	}
+	token, _ = util.GenerateToken(id)
+
+	//token, err = util.GenerateToken(id)
+	// 一般不会失败
+	//if err != nil {
+	//	return token, errors.New(e.GetMsg(e.GenerateTokenFail))
+	//}
 
 	// ref token 30d
-	refreshToken, err = util.GenerateRefreshToken(id, username)
-	if err != nil {
-		return token, errors.New(e.GetMsg(e.GenerateRefreshTokenFail))
-	}
+	refreshToken, _ = util.GenerateRefreshToken(id)
+
+	//refreshToken, err = util.GenerateRefreshToken(id)
+	// 一般不会失败
+	//if err != nil {
+	//	return token, errors.New(e.GetMsg(e.GenerateTokenFail))
+	//}
 
 	// redis
 	// key: 2h token
@@ -124,7 +128,7 @@ func (u *User) Login(req Req) (Resp, error) {
 	}
 
 	// err == nil, id != -1
-	token, _ := tokenSettings(u.ID, req.Username)
+	token, _ := tokenSettings(u.ID)
 	resp.UserId = u.ID
 	resp.Token = token
 	return resp, nil

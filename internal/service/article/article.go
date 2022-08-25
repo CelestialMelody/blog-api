@@ -4,10 +4,11 @@ import (
 	"blog-api/internal/dao"
 	model "blog-api/internal/models"
 	"blog-api/internal/service/cache"
-	"blog-api/pkg/app"
+	"blog-api/pkg/log"
 	"blog-api/pkg/redis"
 	"context"
 	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -66,7 +67,7 @@ func (a *Article) Get() (*model.Article, error) {
 	val, err := redis.RDB.Get(ctx, key).Result()
 
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get article from redis error", zap.Error(err))
 	} else {
 		var article *model.Article
 		_ = json.Unmarshal([]byte(val), &article)
@@ -79,7 +80,7 @@ func (a *Article) Get() (*model.Article, error) {
 	}
 
 	if err := redis.RDB.Set(ctx, key, article, time.Hour).Err(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("set article to redis error", zap.Error(err))
 	}
 	return article, nil
 }
@@ -107,7 +108,7 @@ func (a *Article) GetAll() ([]*model.Article, error) {
 	key := articlesCache.GetArticlesKey()
 	val, err := redis.RDB.Get(ctx, key).Result()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get articles from redis error", zap.Error(err))
 	} else {
 		var articles []*model.Article
 		_ = json.Unmarshal([]byte(val), &articles)
@@ -120,7 +121,7 @@ func (a *Article) GetAll() ([]*model.Article, error) {
 	}
 
 	if err := redis.RDB.Set(ctx, key, articles, time.Hour).Err(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("set articles to redis error", zap.Error(err))
 	}
 	return articles, nil
 }

@@ -19,6 +19,6 @@ func Init() error {
 		logrus.Panic("connect redis failed: %v", err)
 		return err
 	}
-	logrus.Info("Connect redis succeeded")
+	logrus.Info("connect redis succeed")
 	return nil
 }

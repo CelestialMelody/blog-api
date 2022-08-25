@@ -37,7 +37,9 @@ func main() {
 	log.Init()
 	dao.Init()
 
-	gin.SetMode(conf.AppConfig.RunMode)
+	if conf.AppConfig.RunMode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	server := &http.Server{
 		Addr:           fmt.Sprintf(":%s", conf.AppConfig.Port),

@@ -4,8 +4,10 @@ import (
 	userSrv "blog-api/internal/service/user"
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
+	"blog-api/pkg/log"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -27,7 +29,7 @@ func Register(c *gin.Context) {
 
 	// 验证并处理参数
 	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -41,7 +43,7 @@ func Register(c *gin.Context) {
 	// 注册
 	resp, err = u.Register(req)
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("register fail", zap.Error(err))
 		appG.Response(http.StatusOK, e.RegisterFail, nil)
 		return
 	}
@@ -70,12 +72,12 @@ func GetAuthorInfo(c *gin.Context) {
 
 	// 验证
 	if err := u.GetAuthorInfo(username); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get author info fail", zap.Error(err))
 		data["author_id"] = u.ID
 		data["username"] = u.Username
 		data["email"] = u.Email
 		data["token"] = token
-		appG.Response(http.StatusOK, e.UserCheckTokenFail, data)
+		appG.Response(http.StatusOK, e.CheckTokenFail, data)
 		return
 	}
 }
@@ -96,7 +98,7 @@ func Login(c *gin.Context) {
 	var err error
 
 	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
@@ -109,7 +111,7 @@ func Login(c *gin.Context) {
 
 	resp, err = u.Login(req)
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("login fail", zap.Error(err))
 		appG.Response(http.StatusOK, e.LoginFail, nil)
 		return
 	}

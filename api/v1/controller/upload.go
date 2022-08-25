@@ -3,9 +3,10 @@ package controller
 import (
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
+	"blog-api/pkg/log"
 	"blog-api/pkg/upload"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -23,14 +24,13 @@ func UploadImage(c *gin.Context) {
 
 	file, fileHeader, err := c.Request.FormFile("image") // 获取上传文件
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get image file error", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.UploadImageFail, nil)
 		return
 	}
 
 	if fileHeader == nil {
-		err = fmt.Errorf("image is nil")
-		app.MarkError(err)
+		log.Logger.Error("image is nil")
 		appG.Response(http.StatusBadRequest, e.UploadImageFail, nil)
 		return
 	}
@@ -64,15 +64,14 @@ func UploadImages(c *gin.Context) {
 	files, ok := forms.File["images"]
 	if !ok {
 		code = e.InvalidParams
-		err := fmt.Errorf("images is nil")
-		app.MarkError(err)
+		log.Logger.Error("image is nil")
 		appG.Response(http.StatusBadRequest, code, nil)
 	}
 
 	for i := range files {
 		file, err := files[i].Open()
 		if err != nil {
-			app.MarkError(err)
+			log.Logger.Error("open image file error", zap.Error(err))
 			appG.Response(http.StatusBadRequest, e.UploadImageFail, nil)
 		}
 		imageName := upload.GetImageName(files[i].Filename)
@@ -94,25 +93,23 @@ func fileUpload(imageName string, file multipart.File, fileHeader *multipart.Fil
 
 	if !upload.CheckImageExt(imageName) || !upload.CheckImageSize(file) {
 		if !upload.CheckImageExt(imageName) {
-			err := fmt.Errorf("image format is invalid")
-			app.MarkError(err)
+			log.Logger.Error("image format is invalid")
 			appG.Response(http.StatusBadRequest, e.UploadCheckImageFormat, nil)
 		}
 		if !upload.CheckImageSize(file) {
-			err := fmt.Errorf("image size is invalid")
-			app.MarkError(err)
+			log.Logger.Error("image size is invalid")
 			appG.Response(http.StatusBadRequest, e.UploadCheckImageSize, nil)
 		}
 		return
 	}
 
 	if err := upload.CheckImage(fullPath); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("check image error", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.UploadCheckImageFail, nil)
 		return
 	}
 	if err := c.SaveUploadedFile(fileHeader, src); err != nil { // 保存文件
-		app.MarkError(err)
+		log.Logger.Error("save image error", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.UploadImageFail, nil)
 	}
 }

@@ -24,15 +24,16 @@ func InitRouter() *gin.Engine {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	apiV1 := router.Group("/api/v1")
+
+	apiV1.GET("/authorInfo", controller.GetAuthorInfo)   // JWT 验证
+	apiV1.POST("/register", controller.Register)         // 注册
+	apiV1.POST("/login", controller.Login)               // 登录
+	apiV1.POST("/upload", controller.UploadImage)        // 上传图片
+	apiV1.POST("/uploadImages", controller.UploadImages) // 上传多张图片
+
 	// 接入中间件
 	apiV1.Use(jwt.JWT())
 	{
-		apiV1.GET("/authorInfo", controller.GetAuthorInfo)   // JWT 验证
-		apiV1.POST("/register", controller.Register)         // 注册
-		apiV1.POST("/login", controller.Login)               // 登录
-		apiV1.POST("/upload", controller.UploadImage)        // 上传图片
-		apiV1.POST("/uploadImages", controller.UploadImages) // 上传多张图片
-
 		apiV1.GET("/tags", controller.GetTagLists)       // 获取标签列表
 		apiV1.POST("/tags", controller.AddTags)          // 新建标签
 		apiV1.PUT("/tags/:id", controller.EditTags)      // 更新指定标签

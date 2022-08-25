@@ -40,7 +40,7 @@ func Init() (err error) {
 		return err
 	}
 
-	logrus.Infof("Connected mysql success")
+	logrus.Infof("connect mysql success")
 
 	db, _ := DB.DB()
 	db.SetMaxIdleConns(conf.DBConfig.MaxIdle)        // 设置最大空闲连接数

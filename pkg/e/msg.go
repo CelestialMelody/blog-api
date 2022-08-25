@@ -22,8 +22,8 @@ const (
 	EditArticleFail     = 2006
 	DeleteArticleFail   = 2007
 
-	UserCheckTokenFail       = 3001
-	UserCheckTokenTimeout    = 3002
+	CheckTokenFail           = 3001
+	CheckPlainTokenTimeout   = 3002
 	RegisterFail             = 3003
 	UsernameExist            = 3004
 	GenerateTokenFail        = 3005
@@ -31,13 +31,18 @@ const (
 	UserNotExist             = 3007
 	PasswordError            = 3008
 	LoginFail                = 3009
+	TokenEmpty               = 3010
+	CheckRefreshTokenTimeout = 3011
+
+	ReGenerateTokenSuccess = 3012
 
 	UploadImageFail        = 4001
 	UploadCheckImageFail   = 4003
 	UploadCheckImageFormat = 4004
 	UploadCheckImageSize   = 4005
 
-	NotExistUser = 5001
+	ResetRequestFail   = 5001
+	RestartRequestFail = 5002
 )
 
 const (
@@ -67,9 +72,8 @@ var MsgFlags = map[int]string{
 	EditArticleFail:     "编辑文章失败",
 	DeleteArticleFail:   "删除文章失败",
 
-	UserCheckTokenFail:       "Token鉴权失败",
-	UserCheckTokenTimeout:    "Token已超时",
-	NotExistUser:             "该用户不存在",
+	CheckTokenFail:           "Token鉴权失败",
+	CheckPlainTokenTimeout:   "普通Token已超时",
 	RegisterFail:             "注册失败",
 	UsernameExist:            "用户名已存在",
 	GenerateTokenFail:        "生成Token失败",
@@ -77,11 +81,18 @@ var MsgFlags = map[int]string{
 	UserNotExist:             "用户不存在",
 	PasswordError:            "密码错误",
 	LoginFail:                "登录失败",
+	TokenEmpty:               "Token为空",
+	CheckRefreshTokenTimeout: "RefreshToken已超时",
+
+	ReGenerateTokenSuccess: "重新生成token成功",
 
 	UploadImageFail:        "上传图片失败",
 	UploadCheckImageFail:   "检查图片失败",
 	UploadCheckImageFormat: "校验图片格式失败",
 	UploadCheckImageSize:   "校验图片大小失败",
+
+	ResetRequestFail:   "重置请求失败",
+	RestartRequestFail: "重启请求失败",
 }
 
 func GetMsg(code int) string {

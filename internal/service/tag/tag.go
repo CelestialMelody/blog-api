@@ -4,10 +4,11 @@ import (
 	"blog-api/internal/dao"
 	model "blog-api/internal/models"
 	"blog-api/internal/service/cache"
-	"blog-api/pkg/app"
+	"blog-api/pkg/log"
 	"blog-api/pkg/redis"
 	"context"
 	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -79,7 +80,7 @@ func (t *Tag) GetAll() ([]model.Tag, error) {
 	key := tagCache.GetKey()
 	val, err := redis.RDB.Get(ctx, key).Result()
 	if err != nil {
-		app.MarkError(err)
+		log.Logger.Error("get tag from redis error", zap.Error(err))
 	} else {
 		var tags []model.Tag
 		_ = json.Unmarshal([]byte(val), &tags)
@@ -92,7 +93,7 @@ func (t *Tag) GetAll() ([]model.Tag, error) {
 	}
 
 	if err := redis.RDB.Set(ctx, key, tags, time.Hour).Err(); err != nil {
-		app.MarkError(err)
+		log.Logger.Error("set tag to redis error", zap.Error(err))
 	}
 
 	return tags, nil

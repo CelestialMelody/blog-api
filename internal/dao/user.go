@@ -26,6 +26,15 @@ func GetAuthorByUsername(username string) (*model.User, error) {
 	return u, err
 }
 
+func GetUsernameByID(id int) (string, error) {
+	var u *model.User
+	err := mysql.DB.Debug().
+		Where("id = ?", id).
+		First(&u).Error
+
+	return u.Username, err
+}
+
 func Register(u model.User) (int, error) {
 	err := mysql.DB.Create(&u).Error
 	if err != nil {

@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"time"
 )
@@ -89,5 +88,5 @@ func Init() {
 	AppConfig.MaxHeaderBytes = AppConfig.MaxHeaderBytes << 20
 	ImageConfig.ImageMaxSize = ImageConfig.ImageMaxSize * 1024 * 1024
 
-	fmt.Printf("%+v\n", DBConfig)
+	//fmt.Printf("%+v\n", DBConfig)
 }
