@@ -40,7 +40,7 @@ func MkDir(src string) error {
 	return err
 }
 
-func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
-	f, err := os.OpenFile(name, flag, perm)
-	return f, err
-}
+//func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
+//	f, err := os.OpenFile(name, flag, perm)
+//	return f, err
+//}

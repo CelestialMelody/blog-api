@@ -5,6 +5,7 @@ import (
 	"blog-api/pkg/e"
 	"blog-api/pkg/log"
 	"github.com/dgrijalva/jwt-go"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -34,7 +35,9 @@ func createToken(id int, t time.Duration) (string, error) {
 	// 签名
 	jwtSecret = []byte(conf.AppConfig.JwtSecret)
 	token, err = tokenClaims.SignedString(jwtSecret)
-	//log.Logger.Info("token", zap.String("token", token))
+
+	log.Logger.Debug("token", zap.String("token", token))
+
 	if err != nil {
 		log.Logger.Error(e.GetMsg(e.GenerateTokenFail))
 	}
@@ -43,7 +46,12 @@ func createToken(id int, t time.Duration) (string, error) {
 }
 
 func GenerateToken(id int) (string, error) {
-	t := 3 * time.Hour
+	//t := 3 * time.Hour
+
+	// debug
+
+	t := 60 * time.Second
+
 	return createToken(id, t)
 }
 
@@ -79,12 +87,18 @@ func GetUserIDFormToken(token string) (int, error) {
 }
 
 // ValidToken 校验token是否过期
-// bool: 是否过期 default: true 过期
-// error: 解析是否成功 default: nil
+// bool: 是否过期 true 过期
+// error: 解析是否成功 nil
 func ValidToken(token string) (bool, error) {
-	_, err := ParseToken(token)
+	claims, err := ParseToken(token)
 	if err != nil {
-		return false, err
+		return true, err
 	}
-	return true, nil
+	expiresTime := claims.ExpiresAt
+	now := time.Now().Unix()
+	if now > expiresTime {
+		//token 过期了
+		return true, nil
+	}
+	return false, nil
 }

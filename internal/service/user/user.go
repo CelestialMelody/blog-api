@@ -27,7 +27,7 @@ type Req struct {
 }
 
 type Resp struct {
-	UserId int    `json:"user_id"`
+	UserID int    `json:"user_id"`
 	Token  string `json:"token"`
 }
 
@@ -73,7 +73,7 @@ func (u *User) Register(req Req) (Resp, error) {
 
 	// err == nil, id != -1
 	token, _ := tokenSettings(userID)
-	resp.UserId = userID
+	resp.UserID = userID
 	resp.Token = token
 	return resp, nil
 }
@@ -92,6 +92,10 @@ func tokenSettings(id int) (string, error) {
 	// ref token 30d
 	refreshToken, _ = util.GenerateRefreshToken(id)
 
+	// debug
+	log.Logger.Debug("login/register", zap.Any("token", token))
+	log.Logger.Debug("login/register", zap.Any("refresh token", refreshToken))
+
 	//refreshToken, err = util.GenerateRefreshToken(id)
 	// 一般不会失败
 	//if err != nil {
@@ -106,10 +110,10 @@ func tokenSettings(id int) (string, error) {
 		token, refreshToken,
 		30*24*time.Hour).
 		Err(); err != nil {
-		log.Logger.Error("redis set error", zap.Error(err))
+		log.Logger.Error("login/ redis set error", zap.Error(err))
 		return token, err
 	} else {
-		log.Logger.Debug("redis set success")
+		log.Logger.Info("login/ redis set success")
 	}
 
 	return token, nil
@@ -129,7 +133,7 @@ func (u *User) Login(req Req) (Resp, error) {
 
 	// err == nil, id != -1
 	token, _ := tokenSettings(u.ID)
-	resp.UserId = u.ID
+	resp.UserID = u.ID
 	resp.Token = token
 	return resp, nil
 }

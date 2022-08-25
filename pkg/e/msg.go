@@ -23,7 +23,7 @@ const (
 	DeleteArticleFail   = 2007
 
 	CheckTokenFail           = 3001
-	CheckPlainTokenTimeout   = 3002
+	CheckAccessTokenTimeout  = 3002
 	RegisterFail             = 3003
 	UsernameExist            = 3004
 	GenerateTokenFail        = 3005
@@ -41,8 +41,9 @@ const (
 	UploadCheckImageFormat = 4004
 	UploadCheckImageSize   = 4005
 
-	ResetRequestFail   = 5001
-	RestartRequestFail = 5002
+	ResetRequestFail    = 5001
+	BackendLoginFail    = 5002
+	BackendLoginSuccess = 5003
 )
 
 const (
@@ -73,7 +74,7 @@ var MsgFlags = map[int]string{
 	DeleteArticleFail:   "删除文章失败",
 
 	CheckTokenFail:           "Token鉴权失败",
-	CheckPlainTokenTimeout:   "普通Token已超时",
+	CheckAccessTokenTimeout:  "普通Token已超时",
 	RegisterFail:             "注册失败",
 	UsernameExist:            "用户名已存在",
 	GenerateTokenFail:        "生成Token失败",
@@ -91,8 +92,9 @@ var MsgFlags = map[int]string{
 	UploadCheckImageFormat: "校验图片格式失败",
 	UploadCheckImageSize:   "校验图片大小失败",
 
-	ResetRequestFail:   "重置请求失败",
-	RestartRequestFail: "重启请求失败",
+	ResetRequestFail:    "重置请求失败",
+	BackendLoginFail:    "重启请求失败",
+	BackendLoginSuccess: "后台登录成功",
 }
 
 func GetMsg(code int) string {

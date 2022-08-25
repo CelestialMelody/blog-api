@@ -43,36 +43,32 @@ func JWT() gin.HandlerFunc {
 			return
 		}
 
-		// 判断 plain token是否过期(2h)
-		timeout, err := util.ValidToken(token)
+		// 判断 access token是否过期(2h)
+		accTimeout, err0 := util.ValidToken(token)
 
 		// token 未过期
-		if err == nil {
-			userID, err := util.GetUserIDFormToken(token)
-			if err != nil {
-				panic(err)
+		if !accTimeout {
+			userID, err1 := util.GetUserIDFormToken(token)
+			if err1 != nil {
+				panic(err1)
 			}
-			data["user_id"] = userID
-			data["token"] = token
-			appG.Response(http.StatusOK, e.Success, data)
-			c.Set("userId", userID)
+			c.Set("userID", userID)
 			c.Next()
 			return
 		}
 
 		// token 过期
-		if err != nil || timeout {
+		if accTimeout {
 			// token过期或者解析token发生错误
 			// 一般都是token过期
-			log.Logger.Error("valid token err(timeout)", zap.Error(err))
+			log.Logger.Error("valid token err(accTimeout)", zap.Error(err0))
 			log.Logger.Info("tern to valid refreshToken...")
 
 			// refresh token 能否取出
-			value := redis.RDB.Get(context.Background(), token)
-			refreshToken, err := value.Result()
+			refreshToken, err1 := redis.RDB.Get(context.Background(), token).Result()
 
-			if err != nil {
-				log.Logger.Error("refresh token err(token wrong)", zap.Error(err))
+			if err1 != nil {
+				log.Logger.Error("refresh token err(token wrong)", zap.Error(err1))
 				log.Logger.Info("token is wrongful, re login please")
 				data["token"] = token
 				appG.Response(http.StatusUnauthorized, e.CheckTokenFail, data)
@@ -80,11 +76,16 @@ func JWT() gin.HandlerFunc {
 				return
 			}
 
+			// debug
+			log.Logger.Debug("auth", zap.Any("token", token))
+			log.Logger.Debug("auth", zap.Any("refresh token", refreshToken))
+
 			// 可以取出30d token, 检查是否过期
-			refreshTimeout, err := util.ValidToken(refreshToken)
-			if err != nil || refreshTimeout {
+			refreshTimeout, err2 := util.ValidToken(refreshToken)
+			// 过期
+			if refreshTimeout {
 				//refreshToken出问题，表明用户三十天未登录，需要重新登录
-				log.Logger.Error("valid refreshToken err:", zap.Error(err))
+				log.Logger.Error("valid refreshToken err:", zap.Error(err2))
 				log.Logger.Info("user need login again")
 				data["token"] = token
 				appG.Response(http.StatusUnauthorized, e.CheckRefreshTokenTimeout, data)
@@ -135,6 +136,7 @@ func JWT() gin.HandlerFunc {
 			data["user_id"] = userID
 			data["new_token"] = newToken
 			data["new_refresh_token"] = newRefreshToken
+			data["info"] = ""
 
 			if err := redis.RDB.Set(context.Background(), token, newRefreshToken, 30*24*time.Hour).Err(); err != nil {
 				log.Logger.Error("create redis refresh token error", zap.Error(err))
@@ -142,32 +144,35 @@ func JWT() gin.HandlerFunc {
 				log.Logger.Info("redis set success")
 			}
 
-			//// 更新成功
+			// 更新成功
 			//c.Set("userId", userID)
-			//appG.Response(http.StatusOK, e.ReGenerateTokenSuccess, data)
 			//c.Next()
 			//return
 
-			//最好不要后端做
 			//重新发起请求
 			var request *http.Request
-			if request, err = backendLogin(c, newToken); err != nil {
-				log.Logger.Error("reset request failed", zap.Error(err))
+			var err3 error
+			if request, err3 = backendLogin(c, newToken); err3 != nil {
+				data["info"] = "reset request failed"
+				log.Logger.Error("reset request failed", zap.Error(err3))
 				appG.Response(http.StatusUnauthorized, e.ResetRequestFail, data)
 				c.Abort()
 				return
 			}
 
 			client := &http.Client{}
-			post, err := client.Do(request)
+			post, err4 := client.Do(request)
 			if post.StatusCode == 200 {
 				//发送登录请求成功
-				c.Set("userId", userID)
+				data["info"] = "backend login success"
+				c.Set("userID", userID)
+				appG.Response(http.StatusOK, e.BackendLoginSuccess, data)
 				c.Next()
 				return
 			} else {
-				log.Logger.Error("restart request failed", zap.Error(err))
-				appG.Response(http.StatusUnauthorized, e.RestartRequestFail, nil)
+				data["info"] = "backend login success"
+				log.Logger.Error("restart request failed", zap.Error(err4))
+				appG.Response(http.StatusUnauthorized, e.BackendLoginFail, data)
 				c.Abort()
 				return
 			}

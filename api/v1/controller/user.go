@@ -5,6 +5,7 @@ import (
 	"blog-api/pkg/app"
 	"blog-api/pkg/e"
 	"blog-api/pkg/log"
+	"blog-api/pkg/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
@@ -48,7 +49,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	data["uid"] = resp.UserId
+	data["uid"] = resp.UserID
 	data["token"] = resp.Token
 	appG.Response(http.StatusOK, e.Success, data)
 }
@@ -92,6 +93,22 @@ func GetAuthorInfo(c *gin.Context) {
 func Login(c *gin.Context) {
 	appG := app.Gin{C: c}
 	data := make(map[string]interface{})
+
+	// 后台登录（解决redis刷新token）
+	token := c.Query("token")
+	if token != "" {
+		// 后台登录 默认没有问题
+		var resp userSrv.Resp
+		resp.UserID, _ = util.GetUserIDFormToken(token)
+		resp.Token = token
+		log.Logger.Info("backend login msg", zap.Any("request", resp))
+		data["uid"] = resp.UserID
+		data["token"] = token
+		appG.Response(http.StatusOK, e.Success, data)
+		return
+	}
+
+	// 非后台登录
 	var req = userSrv.Req{}
 	var resp = userSrv.Resp{}
 	var u = userSrv.User{}
@@ -104,8 +121,8 @@ func Login(c *gin.Context) {
 	}
 
 	// 查询是否存在
-	if ok := u.CheckExist(req.Username); ok {
-		appG.Response(http.StatusOK, e.UsernameExist, data)
+	if ok := u.CheckExist(req.Username); !ok {
+		appG.Response(http.StatusOK, e.UserNotExist, data)
 		return
 	}
 
@@ -116,7 +133,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	data["uid"] = resp.UserId
+	data["uid"] = resp.UserID
 	data["token"] = resp.Token
 	appG.Response(http.StatusOK, e.Success, data)
 }
