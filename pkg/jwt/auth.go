@@ -164,9 +164,7 @@ func JWT() gin.HandlerFunc {
 			post, err4 := client.Do(request)
 			if post.StatusCode == 200 {
 				//发送登录请求成功
-				data["info"] = "backend login success"
 				c.Set("userID", userID)
-				appG.Response(http.StatusOK, e.BackendLoginSuccess, data)
 				c.Next()
 				return
 			} else {

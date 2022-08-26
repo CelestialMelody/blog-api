@@ -92,7 +92,9 @@ func (t *Tag) GetAll() ([]model.Tag, error) {
 		return nil, err
 	}
 
-	if err := redis.RDB.Set(ctx, key, tags, time.Hour).Err(); err != nil {
+	tagsBytes, _ := json.Marshal(tags)
+
+	if err := redis.RDB.Set(ctx, key, tagsBytes, time.Hour).Err(); err != nil {
 		log.Logger.Error("set tag to redis error", zap.Error(err))
 	}
 

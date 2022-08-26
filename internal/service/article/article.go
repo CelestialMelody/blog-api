@@ -79,7 +79,9 @@ func (a *Article) Get() (*model.Article, error) {
 		return nil, err
 	}
 
-	if err := redis.RDB.Set(ctx, key, article, time.Hour).Err(); err != nil {
+	articleBytes, err := json.Marshal(article)
+
+	if err := redis.RDB.Set(ctx, key, articleBytes, time.Hour).Err(); err != nil {
 		log.Logger.Error("set article to redis error", zap.Error(err))
 	}
 	return article, nil
@@ -120,7 +122,9 @@ func (a *Article) GetAll() ([]*model.Article, error) {
 		return nil, err
 	}
 
-	if err := redis.RDB.Set(ctx, key, articles, time.Hour).Err(); err != nil {
+	articlesBytes, err := json.Marshal(articles)
+
+	if err := redis.RDB.Set(ctx, key, articlesBytes, time.Hour).Err(); err != nil {
 		log.Logger.Error("set articles to redis error", zap.Error(err))
 	}
 	return articles, nil
