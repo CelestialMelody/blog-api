@@ -11,6 +11,7 @@ import (
 	"blog-api/pkg/util"
 	"blog-api/pkg/validate"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/unknwon/com"
 	"go.uber.org/zap"
 	"net/http"
@@ -55,32 +56,23 @@ func GetArticle(c *gin.Context) {
 // @Tags 文章
 // @Produce json
 // @Param tag_id query int false "标签ID"
-// @Param state query int false "状态"
 // @Param page query int false "页码"
 // @Param page_size query int false "每页数量"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles [get]
 func GetArticleLists(c *gin.Context) {
 	// 验证参数
-	type needValid struct {
-		state int `validate:"oneof=0 1"`
-		tagId int `validate:"min=1"`
-	}
-	var need needValid
 	appG := app.Gin{C: c}
+	req := com.StrTo(c.Query("tag_id")).MustInt()
 
-	need.state = com.StrTo(c.Query("state")).MustInt()
-	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
-
-	if err := validate.Struct(need); err != nil {
+	if err := validate.Var(req, "min=1"); err != nil {
 		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	articleService := articleSrv.Article{
-		TagID:    need.tagId,
-		State:    need.state,
+		TagID:    req,
 		PageNum:  util.GetPage(c),
 		PageSize: conf.AppConfig.PageSize,
 	}
@@ -116,39 +108,20 @@ func GetArticleLists(c *gin.Context) {
 // @Param desc query string true "描述"
 // @Param content query string true "内容"
 // @Param created_by query string true "创建人"
-// @Param state query int true "状态"
 // @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
 // @Router /api/v1/articles [post]
 func AddArticle(c *gin.Context) {
 	// 获取参数
-	type needValid struct {
-		tagId         int    `validate:"min=1"`
-		title         string `validate:"min=1,max=100"`
-		desc          string `validate:"min=1,max=255"`
-		content       string `validate:"min=1,max=65535"`
-		createdBy     string `validate:"min=1,max=100"`
-		state         int    `validate:"oneof=0 1"`
-		coverImageUrl string `validate:"min=1,max=255"`
-	}
-
-	var need needValid
+	var req articleSrv.AddReq
 	appG := app.Gin{C: c}
 
-	need.tagId = com.StrTo(c.Query("tag_id")).MustInt()
-	need.title = c.Query("title")
-	need.desc = c.Query("desc")
-	need.content = c.Query("content")
-	need.createdBy = c.Query("created_by")
-	need.state = com.StrTo(c.Query("state")).MustInt()
-	need.coverImageUrl = c.Query("cover_image_url")
-
-	if err := validate.Struct(need); err != nil {
+	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
 		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
-	tagService := tagSrv.Tag{ID: need.tagId}
+	tagService := tagSrv.Tag{ID: req.TagID}
 	if err := tagService.ExistByID(); err != nil {
 		log.Logger.Error("tag not exist", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)
@@ -156,13 +129,12 @@ func AddArticle(c *gin.Context) {
 	}
 
 	articleService := articleSrv.Article{
-		TagID:         need.tagId,
-		Title:         need.title,
-		Desc:          need.desc,
-		Content:       need.content,
-		CoverImageUrl: need.coverImageUrl,
-		CreatedBy:     need.createdBy,
-		State:         need.state,
+		TagID:         req.TagID,
+		Title:         req.Title,
+		Desc:          req.Desc,
+		Content:       req.Content,
+		CoverImageUrl: req.CoverImageUrl,
+		CreatedBy:     req.CreatedBy,
 	}
 
 	if err := articleService.Add(); err != nil {
@@ -187,44 +159,23 @@ func AddArticle(c *gin.Context) {
 // @Router /api/v1/articles/{id} [put]
 func EditArticle(c *gin.Context) {
 	// 获取参数
-	type needValid struct {
-		id            int    `validate:"min=1"`
-		tagID         int    `validate:"min=1"`
-		title         string `validate:"min=1,max=100"`
-		desc          string `validate:"min=1,max=255"`
-		content       string `validate:"min=1,max=65535"`
-		modifiedBy    string `validate:"min=1,max=100"`
-		state         int    `validate:"oneof=0 1"`
-		coverImageUrl string `validate:"min=1,max=255"`
-	}
-
-	var need needValid
-
-	need.id = com.StrTo(c.Param("id")).MustInt()
-	need.tagID = com.StrTo(c.Query("tag_id")).MustInt()
-	need.title = c.Query("title")
-	need.desc = c.Query("content")
-	need.modifiedBy = c.Query("modified_by")
-	need.state = com.StrTo(c.Query("state")).MustInt()
-	need.coverImageUrl = c.Query("cover_image_url")
-
+	var req articleSrv.EditReq
 	appG := app.Gin{C: c}
 
-	if err := validate.Struct(need); err != nil {
+	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
 		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return
 	}
 
 	articleService := articleSrv.Article{
-		ID:            need.id,
-		TagID:         need.tagID,
-		Title:         need.title,
-		Desc:          need.desc,
-		Content:       need.content,
-		CoverImageUrl: need.coverImageUrl,
-		ModifiedBy:    need.modifiedBy,
-		State:         need.state,
+		ID:            req.ID,
+		TagID:         req.TagID,
+		Title:         req.Title,
+		Desc:          req.Desc,
+		Content:       req.Content,
+		CoverImageUrl: req.CoverImageUrl,
+		ModifiedBy:    req.ModifiedBy,
 	}
 
 	if err := articleService.ExistByID(); err != nil {
@@ -233,7 +184,7 @@ func EditArticle(c *gin.Context) {
 		return
 	}
 
-	tagService := tagSrv.Tag{ID: need.tagID}
+	tagService := tagSrv.Tag{ID: req.TagID}
 	if err := tagService.ExistByID(); err != nil {
 		log.Logger.Error("tag not exist", zap.Error(err))
 		appG.Response(http.StatusInternalServerError, e.NotExistTag, nil)

@@ -40,5 +40,5 @@ func Register(u model.User) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	return u.ID, nil
+	return int(u.ID), nil
 }

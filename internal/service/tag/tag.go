@@ -23,6 +23,17 @@ type Tag struct {
 	PageSize int
 }
 
+type AddReq struct {
+	Name      string `binding:"required,max=100"`
+	CreatedBy string `binding:"required,max=100"`
+}
+
+type EditReq struct {
+	ID         int    `binding:"required,min=1"`
+	Name       string `binding:"required,max=100"`
+	ModifiedBy string `bingding:"required,max=100"`
+}
+
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func (t *Tag) ExistByName() error {

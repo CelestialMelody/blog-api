@@ -22,8 +22,10 @@ type User struct {
 }
 
 type Req struct {
-	Username string `form:"username" binding:"required,min=1,max=32"`
-	Password string `form:"password" binding:"required,min=6,max=32"`
+	Username    string `form:"username" binding:"required,min=1,max=32"`
+	Password    string `form:"password" binding:"required,min=6,max=32"`
+	Email       string `form:"email" binding:"email"`
+	PhoneNumber string `form:"phone_number" binding:"mobile"`
 }
 
 type Resp struct {
@@ -47,7 +49,7 @@ func (u *User) GetAuthorInfo(username string) error {
 	if err != nil {
 		return errors.New(e.GetMsg(e.UserNotExist))
 	}
-	u.ID = authorInTable.ID
+	u.ID = int(authorInTable.ID)
 	u.Username = authorInTable.Username
 	u.Email = authorInTable.Email
 	u.password = authorInTable.Password
@@ -61,8 +63,10 @@ func (u *User) Register(req Req) (Resp, error) {
 
 	// 密码加密
 	user := model.User{
-		Username: req.Username,
-		Password: string(hash),
+		Username:    req.Username,
+		Password:    string(hash),
+		Email:       req.Email,
+		PhoneNumber: req.PhoneNumber,
 	}
 
 	userID, err := dao.Register(user)

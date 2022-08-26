@@ -27,6 +27,25 @@ type Article struct {
 	PageSize int
 }
 
+type EditReq struct {
+	ID            int    `validate:"min=1"`
+	TagID         int    `validate:"min=1"`
+	Title         string `validate:"min=1,max=100"`
+	Desc          string `validate:"min=1,max=255"`
+	Content       string `validate:"min=1,max=65535"`
+	ModifiedBy    string `validate:"min=1,max=100"`
+	CoverImageUrl string
+}
+
+type AddReq struct {
+	TagID         int    `binding:"min=1"`
+	Title         string `binding:"min=1,max=100"`
+	Desc          string `binding:"min=1,max=255"`
+	Content       string `binding:"min=1,max=65535"`
+	CreatedBy     string `binding:"min=1,max=100"`
+	CoverImageUrl string
+}
+
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func (a *Article) Add() error {

@@ -7,6 +7,7 @@ import (
 	"blog-api/pkg/log"
 	"blog-api/pkg/mysql"
 	"blog-api/pkg/redis"
+	"blog-api/pkg/validate"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -36,6 +37,7 @@ func main() {
 	router := InitRouter()
 	log.Init()
 	dao.Init()
+	validate.Init()
 
 	if conf.AppConfig.RunMode == "release" {
 		gin.SetMode(gin.ReleaseMode)
