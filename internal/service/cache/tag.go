@@ -7,9 +7,8 @@ import (
 )
 
 type Tag struct {
-	ID    int
-	Name  string
-	State int
+	ID   int
+	Name string
 
 	PageNum  int
 	PageSize int
@@ -25,9 +24,6 @@ func (t *Tag) GetKey() string {
 
 	if t.Name != "" {
 		key = append(key, t.Name)
-	}
-	if t.State >= 0 {
-		key = append(key, strconv.Itoa(t.State))
 	}
 	if t.PageNum > 0 {
 		key = append(key, strconv.Itoa(t.PageNum))

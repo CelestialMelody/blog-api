@@ -27,10 +27,9 @@ func ExistTagByID(id int) error {
 	return err
 }
 
-func AddTag(name string, state int, createdBy string) error {
+func AddTag(name string, createdBy string) error {
 	tag := model.Tag{
 		Name:      name,
-		State:     state,
 		CreatedBy: createdBy,
 	}
 	err := mysql.DB.Model(&model.Tag{}).Create(&tag).Error

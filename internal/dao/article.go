@@ -44,7 +44,6 @@ func AddArticle(data map[string]interface{}) error {
 		Desc:          data["desc"].(string),
 		Content:       data["content"].(string),
 		CreatedBy:     data["created_by"].(string),
-		State:         data["state"].(int),
 		CoverImageUrl: data["cover_image_url"].(string),
 	})
 	return nil

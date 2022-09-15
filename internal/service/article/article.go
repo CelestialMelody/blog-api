@@ -19,7 +19,6 @@ type Article struct {
 	Desc          string
 	Content       string
 	CoverImageUrl string
-	State         int
 	CreatedBy     string
 	ModifiedBy    string
 
@@ -56,7 +55,6 @@ func (a *Article) Add() error {
 		"content":         a.Content,
 		"created_by":      a.CreatedBy,
 		"cover_image_url": a.CoverImageUrl,
-		"state":           a.State,
 	}
 
 	err := dao.AddArticle(article)
@@ -71,7 +69,6 @@ func (a *Article) Edit() error {
 		"desc":            a.Desc,
 		"content":         a.Content,
 		"cover_image_url": a.CoverImageUrl,
-		"state":           a.State,
 		"modified_by":     a.ModifiedBy,
 	})
 }
@@ -108,9 +105,6 @@ func (a *Article) Get() (*model.Article, error) {
 
 func (a *Article) getMaps() map[string]interface{} {
 	maps := make(map[string]interface{})
-	if a.State != -1 {
-		maps["state"] = a.State
-	}
 	if a.TagID != -1 {
 		maps["tag_id"] = a.TagID
 	}
@@ -121,7 +115,6 @@ func (a *Article) GetAll() ([]*model.Article, error) {
 	ctx := context.Background()
 	articlesCache := cache.Article{
 		TagID:    a.TagID,
-		State:    a.State,
 		PageNum:  a.PageNum,
 		PageSize: a.PageSize,
 	}

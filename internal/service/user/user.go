@@ -22,8 +22,8 @@ type User struct {
 }
 
 type Req struct {
-	Username    string `form:"username" binding:"required,min=1,max=32"`
-	Password    string `form:"password" binding:"required,min=6,max=32"`
+	Username    string `form:"username" binding:"required,min=1,max=32" validate:"min=1,max=32"`
+	Password    string `form:"password" binding:"required,min=6,max=32" validate:"min=6,max=32"`
 	Email       string `form:"email" binding:"email"`
 	PhoneNumber string `form:"phone_number" binding:"mobile"`
 }

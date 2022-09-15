@@ -6,6 +6,7 @@ import (
 	"blog-api/pkg/e"
 	"blog-api/pkg/log"
 	"blog-api/pkg/util"
+	"blog-api/pkg/validate"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
@@ -114,7 +115,10 @@ func Login(c *gin.Context) {
 	var u = userSrv.User{}
 	var err error
 
-	if err := c.ShouldBindWith(&req, binding.Query); err != nil {
+	req.Username = c.Query("username")
+	req.Password = c.Query("password")
+
+	if err := validate.Struct(req); err != nil {
 		log.Logger.Error("invalid params", zap.Error(err))
 		appG.Response(http.StatusBadRequest, e.InvalidParams, nil)
 		return

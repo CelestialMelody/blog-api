@@ -17,7 +17,6 @@ type Tag struct {
 	Name       string
 	CreatedBy  string
 	ModifiedBy string
-	State      int
 
 	PageNum  int
 	PageSize int
@@ -45,17 +44,13 @@ func (t *Tag) ExistByID() error {
 }
 
 func (t *Tag) Add() error {
-	return dao.AddTag(t.Name, t.State, t.CreatedBy)
+	return dao.AddTag(t.Name, t.CreatedBy)
 }
 
 func (t *Tag) Edit() error {
 	data := make(map[string]interface{})
 	data["modified_by"] = t.ModifiedBy
 	data["name"] = t.Name
-	if t.State >= 0 {
-		data["state"] = t.State
-	}
-
 	return dao.EditTag(t.ID, data)
 }
 
@@ -70,10 +65,6 @@ func (t *Tag) getMaps() map[string]interface{} {
 		maps["name"] = t.Name
 	}
 
-	if t.State >= 0 {
-		maps["state"] = t.State
-	}
-
 	return maps
 }
 
@@ -84,7 +75,6 @@ func (t *Tag) Count() (int64, error) {
 func (t *Tag) GetAll() ([]model.Tag, error) {
 	ctx := context.Background()
 	tagCache := cache.Tag{
-		State:    t.State,
 		PageNum:  t.PageNum,
 		PageSize: t.PageSize,
 	}
